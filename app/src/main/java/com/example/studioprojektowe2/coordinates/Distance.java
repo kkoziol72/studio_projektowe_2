@@ -41,7 +41,7 @@ public class Distance {
 
     public void updateDistance(Acceleration acceleration, Double time, Velocity velocity) {
         this.x = this.x + velocity.getV_x() * time + 0.5 * acceleration.getA_x() * Math.pow(time, 2);
-        this.y = this.y + velocity.getV_y() * time + 0.5 + acceleration.getA_y() * Math.pow(time, 2);
+        this.y = this.y + velocity.getV_y() * time + 0.5 * acceleration.getA_y() * Math.pow(time, 2);
         this.z = this.z + velocity.getV_z() * time + 0.5 * acceleration.getA_z() * Math.pow(time, 2);
     }
 
