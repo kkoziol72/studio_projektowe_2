@@ -67,11 +67,13 @@ public class MainActivity extends AppCompatActivity {
         accelerometerYValue = findViewById(R.id.accelerometerYValue);
         accelerometerZValue = findViewById(R.id.accelerometerZValue);
 
+        int READINGRATE = 200000;
+
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-        sensorManager.registerListener(accelerometerListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(gyroscopeListener, gyroscope, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(accelerometerListener, accelerometer, READINGRATE);
+        sensorManager.registerListener(gyroscopeListener, gyroscope, READINGRATE);
 
         setPositionButton = findViewById(R.id.setPositionButton);
         setPositionButton.setOnClickListener(new View.OnClickListener() {
