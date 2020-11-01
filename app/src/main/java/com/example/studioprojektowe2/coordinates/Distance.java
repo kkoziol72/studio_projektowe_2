@@ -40,9 +40,15 @@ public class Distance {
     }
 
     public void updateDistance(Acceleration acceleration, Float time, Velocity velocity) {
-        this.x = this.x + velocity.getV_x() * time + 0.5F * acceleration.getA_x() * time * time;
-        this.y = this.y + velocity.getV_y() * time + 0.5F * acceleration.getA_y() * time * time;
-        this.z = this.z + velocity.getV_z() * time + 0.5F * acceleration.getA_z() * time * time;
+        this.x = (velocity.getV_x() * time) + (0.5F * acceleration.getA_x() * time * time);
+        this.y = (velocity.getV_y() * time) + (0.5F * acceleration.getA_y() * time * time);
+        this.z = (velocity.getV_z() * time) + (0.5F * acceleration.getA_z() * time * time);
+    }
+
+    public void setDistanceTo0() {
+        this.x = 0.0F;
+        this.y = 0.0F;
+        this.z = 0.0F;
     }
 
 }

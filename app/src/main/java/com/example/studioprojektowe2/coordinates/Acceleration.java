@@ -3,9 +3,9 @@ package com.example.studioprojektowe2.coordinates;
 
 public class Acceleration {
 
-    private Float a_x;
-    private Float a_y;
-    private Float a_z;
+    private Float a_x = 0.0F;
+    private Float a_y = 0.0F;
+    private Float a_z = 0.0F;
 
     public Acceleration() {}
 
@@ -37,6 +37,12 @@ public class Acceleration {
 
     public void setA_z(Float a_z) {
         this.a_z = a_z;
+    }
+
+    public void setAccelerationTo0() {
+        this.a_x = 0.0F;
+        this.a_y = 0.0F;
+        this.a_z = 0.0F;
     }
 
 }

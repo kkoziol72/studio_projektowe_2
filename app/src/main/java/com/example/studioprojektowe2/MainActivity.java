@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
                 acceleration.setA_y(sensorEvent.values[1]);
                 acceleration.setA_z(sensorEvent.values[2]);
 
-                coordinates.getCoordinates(acceleration, READINGRATE / 100000.0F,
+                coordinates.getCoordinates(acceleration, READINGRATE / 1000000.0F,
                         distance, velocity);
                 coordinatesXValue.setText("x: " + coordinates.getX());
                 coordinatesYValue.setText("y: " + coordinates.getY());
@@ -101,11 +101,12 @@ public class MainActivity extends AppCompatActivity {
         sensorManager.registerListener(gyroscopeListener, gyroscope, READINGRATE);
 
         Button setPositionButton = findViewById(R.id.setPositionButton);
-        setPositionButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                coordinates.setCoordinatesTo0();
-                Log.e("Button", "clicked");
-            }
+        setPositionButton.setOnClickListener(v -> {
+            distance.setDistanceTo0();
+            velocity.setVelocityTo0();
+            acceleration.setAccelerationTo0();
+            coordinates.setCoordinatesTo0();
+            Log.e("Button", "clicked");
         });
     }
 

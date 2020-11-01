@@ -47,8 +47,6 @@ public class Coordinates {
 
     public void getCoordinates(Acceleration acceleration, Float time, Distance distance,
                                Velocity velocity) {
-        // printCoordinates();
-
         distance.updateDistance(acceleration, time, velocity);
         velocity.updateVelocity(acceleration, time);
         updateCoordinates(distance);
@@ -65,22 +63,6 @@ public class Coordinates {
         this.x = 0.0F;
         this.y = 0.0F;
         this.z = 0.0F;
-    }
-
-    // how to use it, in while loop - "stop button" not pressed or something like that
-    public static void main(String [] args) {
-        Acceleration acceleration = new Acceleration(1.0F,1.0F,1.0F);
-        Distance distance = new Distance();
-        Velocity velocity = new Velocity();
-
-        Coordinates coordinates = new Coordinates();
-
-        int iter = 10;
-
-        while (iter > 0) {
-            coordinates.getCoordinates(acceleration, 0.2F, distance, velocity);
-            iter--;
-        }
     }
 
 }
