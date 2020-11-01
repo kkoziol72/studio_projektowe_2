@@ -1,18 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:orientation="vertical"
+    android:padding="30sp">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/accelerometer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textSize="24sp"></TextView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:id="@+id/accelerometerXValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30sp"></TextView>
+
+    <TextView
+        android:id="@+id/accelerometerYValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30sp"></TextView>
+
+    <TextView
+        android:id="@+id/accelerometerZValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30sp"></TextView>
+
+    <TextView
+        android:id="@+id/gyroscope"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30sp"
+        android:textSize="24sp"></TextView>
+
+    <TextView
+        android:id="@+id/gyroscopeXValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30sp"></TextView>
+
+    <TextView
+        android:id="@+id/gyroscopeYValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30sp"></TextView>
+
+    <TextView
+        android:id="@+id/gyroscopeZValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30sp"></TextView>
+
+    <Button
+        android:id="@+id/setPositionButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Set position"
+        android:layout_marginTop="30sp" />
+</LinearLayout>
