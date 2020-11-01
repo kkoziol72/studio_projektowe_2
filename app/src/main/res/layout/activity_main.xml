@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -9,9 +13,34 @@
     android:padding="30sp">
 
     <TextView
+        android:id="@+id/coordinates"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"></TextView>
+
+    <TextView
+        android:id="@+id/coordinatesXValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30sp"></TextView>
+
+    <TextView
+        android:id="@+id/coordinatesYValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30sp"></TextView>
+
+    <TextView
+        android:id="@+id/coordinatesZValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30sp"></TextView>
+
+    <TextView
         android:id="@+id/accelerometer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="30sp"
         android:textSize="24sp"></TextView>
 
     <TextView
@@ -64,3 +93,5 @@
         android:text="Set position"
         android:layout_marginTop="30sp" />
 </LinearLayout>
+
+</ScrollView>

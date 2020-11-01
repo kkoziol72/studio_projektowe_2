@@ -3,46 +3,46 @@ package com.example.studioprojektowe2.coordinates;
 
 public class Distance {
 
-    private Double x = 0.0;
-    private Double y = 0.0;
-    private Double z = 0.0;
+    private Float x = 0.0F;
+    private Float y = 0.0F;
+    private Float z = 0.0F;
 
     public Distance() {}
 
-    public Distance(Double x, Double y, Double z) {
+    public Distance(Float x, Float y, Float z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
-    public Double getX() {
+    public Float getX() {
         return x;
     }
 
-    public void setX(Double x) {
+    public void setX(Float x) {
         this.x = x;
     }
 
-    public Double getY() {
+    public Float getY() {
         return y;
     }
 
-    public void setY(Double y) {
+    public void setY(Float y) {
         this.y = y;
     }
 
-    public Double getZ() {
+    public Float getZ() {
         return z;
     }
 
-    public void setZ(Double z) {
+    public void setZ(Float z) {
         this.z = z;
     }
 
-    public void updateDistance(Acceleration acceleration, Double time, Velocity velocity) {
-        this.x = this.x + velocity.getV_x() * time + 0.5 * acceleration.getA_x() * Math.pow(time, 2);
-        this.y = this.y + velocity.getV_y() * time + 0.5 * acceleration.getA_y() * Math.pow(time, 2);
-        this.z = this.z + velocity.getV_z() * time + 0.5 * acceleration.getA_z() * Math.pow(time, 2);
+    public void updateDistance(Acceleration acceleration, Float time, Velocity velocity) {
+        this.x = this.x + velocity.getV_x() * time + 0.5F * acceleration.getA_x() * time * time;
+        this.y = this.y + velocity.getV_y() * time + 0.5F * acceleration.getA_y() * time * time;
+        this.z = this.z + velocity.getV_z() * time + 0.5F * acceleration.getA_z() * time * time;
     }
 
 }

@@ -3,39 +3,39 @@ package com.example.studioprojektowe2.coordinates;
 
 public class Coordinates {
 
-    private Double x = 0.0;
-    private Double y = 0.0;
-    private Double z = 0.0;
+    private Float x = 0.0F;
+    private Float y = 0.0F;
+    private Float z = 0.0F;
 
     public Coordinates() {}
 
-    public Coordinates(Double x, Double y, Double z) {
+    public Coordinates(Float x, Float y, Float z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
-    public Double getX() {
+    public Float getX() {
         return x;
     }
 
-    public void setX(Double x) {
+    public void setX(Float x) {
         this.x = x;
     }
 
-    public Double getY() {
+    public Float getY() {
         return y;
     }
 
-    public void setY(Double y) {
+    public void setY(Float y) {
         this.y = y;
     }
 
-    public Double getZ() {
+    public Float getZ() {
         return z;
     }
 
-    public void setZ(Double z) {
+    public void setZ(Float z) {
         this.z = z;
     }
 
@@ -45,9 +45,9 @@ public class Coordinates {
         this.z = this.z + distance.getZ();
     }
 
-    public void getCoordinates(Acceleration acceleration, Double time, Distance distance,
+    public void getCoordinates(Acceleration acceleration, Float time, Distance distance,
                                Velocity velocity) {
-        printCoordinates();
+        // printCoordinates();
 
         distance.updateDistance(acceleration, time, velocity);
         velocity.updateVelocity(acceleration, time);
@@ -61,9 +61,15 @@ public class Coordinates {
         System.out.println();
     }
 
+    public void setCoordinatesTo0() {
+        this.x = 0.0F;
+        this.y = 0.0F;
+        this.z = 0.0F;
+    }
+
     // how to use it, in while loop - "stop button" not pressed or something like that
     public static void main(String [] args) {
-        Acceleration acceleration = new Acceleration(1.0,1.0,1.0);
+        Acceleration acceleration = new Acceleration(1.0F,1.0F,1.0F);
         Distance distance = new Distance();
         Velocity velocity = new Velocity();
 
@@ -72,7 +78,7 @@ public class Coordinates {
         int iter = 10;
 
         while (iter > 0) {
-            coordinates.getCoordinates(acceleration, 1.0, distance, velocity);
+            coordinates.getCoordinates(acceleration, 0.2F, distance, velocity);
             iter--;
         }
     }
