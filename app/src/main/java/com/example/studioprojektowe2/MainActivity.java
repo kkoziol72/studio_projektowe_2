@@ -10,7 +10,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -45,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
                 acceleration.setA_y(sensorEvent.values[1]);
                 acceleration.setA_z(sensorEvent.values[2]);
 
-                coordinates.getCoordinates(acceleration, READINGRATE / 1000000.0F,
+                coordinates.setCoordinates(acceleration, READINGRATE / 1000000.0F,
                         distance, velocity);
                 coordinatesXValue.setText("x: " + coordinates.getX());
                 coordinatesYValue.setText("y: " + coordinates.getY());

@@ -45,7 +45,7 @@ public class Coordinates {
         this.z = this.z + distance.getZ();
     }
 
-    public void getCoordinates(Acceleration acceleration, Float time, Distance distance,
+    public void setCoordinates(Acceleration acceleration, Float time, Distance distance,
                                Velocity velocity) {
         distance.updateDistance(acceleration, time, velocity);
         velocity.updateVelocity(acceleration, time);
