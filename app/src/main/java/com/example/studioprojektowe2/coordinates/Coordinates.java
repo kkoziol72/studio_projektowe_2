@@ -45,11 +45,44 @@ public class Coordinates {
         this.z = this.z + distance.getZ();
     }
 
+    public void updateCoordinateX(Distance distance) {
+        this.x = this.x + distance.getX();
+    }
+
+    public void updateCoordinateY(Distance distance) {
+        this.y = this.y + distance.getY();
+    }
+
+    public void updateCoordinateZ(Distance distance) {
+        this.z = this.z + distance.getZ();
+    }
+
     public void setCoordinates(Acceleration acceleration, Float time, Distance distance,
                                Velocity velocity) {
         distance.updateDistance(acceleration, time, velocity);
         velocity.updateVelocity(acceleration, time);
         updateCoordinates(distance);
+    }
+
+    public void setCoordinateX(Acceleration acceleration, Float time, Distance distance,
+                               Velocity velocity) {
+        distance.updateDistanceX(acceleration, time, velocity);
+        velocity.updateVelocityX(acceleration, time);
+        updateCoordinateX(distance);
+    }
+
+    public void setCoordinateY(Acceleration acceleration, Float time, Distance distance,
+                               Velocity velocity) {
+        distance.updateDistanceY(acceleration, time, velocity);
+        velocity.updateVelocityY(acceleration, time);
+        updateCoordinateY(distance);
+    }
+
+    public void setCoordinateZ(Acceleration acceleration, Float time, Distance distance,
+                               Velocity velocity) {
+        distance.updateDistanceZ(acceleration, time, velocity);
+        velocity.updateVelocityZ(acceleration, time);
+        updateCoordinateZ(distance);
     }
 
     public void printCoordinates() {

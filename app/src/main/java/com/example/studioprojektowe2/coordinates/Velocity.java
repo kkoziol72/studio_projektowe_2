@@ -45,6 +45,18 @@ public class Velocity {
         this.v_z = this.v_z + (acceleration.getA_z() * time);
     }
 
+    public void updateVelocityX(Acceleration acceleration, Float time) {
+        this.v_x = this.v_x + (acceleration.getA_x() * time);
+    }
+
+    public void updateVelocityY(Acceleration acceleration, Float time) {
+        this.v_y = this.v_y + (acceleration.getA_y() * time);
+    }
+
+    public void updateVelocityZ(Acceleration acceleration, Float time) {
+        this.v_z = this.v_z + (acceleration.getA_z() * time);
+    }
+
     public void setVelocityTo0() {
         this.v_x = 0.0F;
         this.v_y = 0.0F;

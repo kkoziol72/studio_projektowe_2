@@ -21,6 +21,7 @@ import com.kircherelectronics.fsensor.observer.SensorSubject;
 import com.kircherelectronics.fsensor.sensor.FSensor;
 import com.kircherelectronics.fsensor.sensor.acceleration.KalmanLinearAccelerationSensor;
 import com.kircherelectronics.fsensor.sensor.gyroscope.KalmanGyroscopeSensor;
+import com.kircherelectronics.fsensor.sensor.acceleration.LinearAccelerationSensor;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -72,12 +73,25 @@ public class MainActivity extends AppCompatActivity {
             accelerometerYValue.setText("y: " + values[1]);
             accelerometerZValue.setText("z: " + values[2]);
 
+            if (Math.abs(acceleration.getA_x() - values[0]) > 0.1 && Math.abs(acceleration.getA_x() - values[0]) < 9.0) {
+                coordinates.setCoordinateX(acceleration, READINGRATE / 1000000.0F,
+                        distance, velocity);
+            }
+
+            if (Math.abs(acceleration.getA_y() - values[1]) > 0.1 && Math.abs(acceleration.getA_y() - values[1]) < 9.0) {
+                coordinates.setCoordinateY(acceleration, READINGRATE / 1000000.0F,
+                        distance, velocity);
+            }
+
+            if (Math.abs(acceleration.getA_z() - values[2]) > 0.1 && Math.abs(acceleration.getA_z() - values[2]) < 9.0) {
+                coordinates.setCoordinateZ(acceleration, READINGRATE / 1000000.0F,
+                        distance, velocity);
+            }
+
             acceleration.setA_x(values[0]);
             acceleration.setA_y(values[1]);
             acceleration.setA_z(values[2]);
 
-            coordinates.setCoordinates(acceleration, READINGRATE / 1000000.0F,
-                    distance, velocity);
             coordinatesXValue.setText("x: " + coordinates.getX());
             coordinatesYValue.setText("y: " + coordinates.getY());
             coordinatesZValue.setText("z: " + coordinates.getZ());
