@@ -32,80 +32,49 @@ public class MainActivity extends AppCompatActivity {
 
     final int READINGRATE = 200000;
     final AtomicBoolean pressed = new AtomicBoolean(false);
-
-    private FSensor gyroscopeSensor;
-    private FSensor accelerationSensor;
-
+    private final float ALPHA = 0.18f;
+    private float[] gyroscopeLastData;
     Acceleration acceleration = new Acceleration();
     Distance distance = new Distance();
     Velocity velocity = new Velocity();
     Coordinates coordinates = new Coordinates();
 
-//    private final SensorEventListener accelerometerListener = new SensorEventListener()
-//        {
-//            @SuppressLint("SetTextI18n")
-//            @Override
-//            public void onSensorChanged(SensorEvent sensorEvent) {
-//                accelerometerXValue.setText("x: " + sensorEvent.values[0]);
-//                accelerometerYValue.setText("y: " + sensorEvent.values[1]);
-//                accelerometerZValue.setText("z: " + sensorEvent.values[2]);
-//
-//                acceleration.setA_x(sensorEvent.values[0]);
-//                acceleration.setA_y(sensorEvent.values[1]);
-//                acceleration.setA_z(sensorEvent.values[2]);
-//
-//                coordinates.setCoordinates(acceleration, READINGRATE / 1000000.0F,
-//                        distance, velocity);
-//                coordinatesXValue.setText("x: " + coordinates.getX());
-//                coordinatesYValue.setText("y: " + coordinates.getY());
-//                coordinatesZValue.setText("z: " + coordinates.getZ());
-//            }
-//
-//            @Override
-//            public void onAccuracyChanged(Sensor sensor, int i) {}
-//        };
+    private final SensorEventListener accelerometerListener = new SensorEventListener()
+        {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onSensorChanged(SensorEvent sensorEvent) {
+                acceleration.readFromArray(lowPass(sensorEvent.values, acceleration.toArray()));
 
-    private SensorSubject.SensorObserver accelerationListener = new SensorSubject.SensorObserver() {
+                accelerometerXValue.setText("x: " + sensorEvent.values[0]);
+                accelerometerYValue.setText("y: " + sensorEvent.values[1]);
+                accelerometerZValue.setText("z: " + sensorEvent.values[2]);
+
+                coordinates.setCoordinates(acceleration, READINGRATE / 1000000.0F,
+                        distance, velocity);
+                coordinatesXValue.setText("x: " + coordinates.getX());
+                coordinatesYValue.setText("y: " + coordinates.getY());
+                coordinatesZValue.setText("z: " + coordinates.getZ());
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int i) {}
+        };
+    private final SensorEventListener gyroscopeListener = new SensorEventListener()
+    {
+        @SuppressLint("SetTextI18n")
         @Override
-        public void onSensorChanged(float[] values) {
-            accelerometerXValue.setText("x: " + values[0]);
-            accelerometerYValue.setText("y: " + values[1]);
-            accelerometerZValue.setText("z: " + values[2]);
-
-            acceleration.setA_x(values[0]);
-            acceleration.setA_y(values[1]);
-            acceleration.setA_z(values[2]);
-
-            coordinates.setCoordinates(acceleration, READINGRATE / 1000000.0F,
-                    distance, velocity);
-            coordinatesXValue.setText("x: " + coordinates.getX());
-            coordinatesYValue.setText("y: " + coordinates.getY());
-            coordinatesZValue.setText("z: " + coordinates.getZ());
+        public void onSensorChanged(SensorEvent sensorEvent) {
+            gyroscopeLastData = lowPass(sensorEvent.values, gyroscopeLastData);
+            gyroscopeXValue.setText("x: " + gyroscopeLastData[0]);
+            gyroscopeYValue.setText("y: " + gyroscopeLastData[1]);
+            gyroscopeZValue.setText("z: " + gyroscopeLastData[2]);
         }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int i) {}
     };
 
-//    private final SensorEventListener gyroscopeListener = new SensorEventListener()
-//    {
-//        @SuppressLint("SetTextI18n")
-//        @Override
-//        public void onSensorChanged(SensorEvent sensorEvent) {
-//            gyroscopeXValue.setText("x: " + sensorEvent.values[0]);
-//            gyroscopeYValue.setText("y: " + sensorEvent.values[1]);
-//            gyroscopeZValue.setText("z: " + sensorEvent.values[2]);
-//        }
-//
-//        @Override
-//        public void onAccuracyChanged(Sensor sensor, int i) {}
-//    };
-
-    private SensorSubject.SensorObserver gyroscopeListener = new SensorSubject.SensorObserver() {
-        @Override
-        public void onSensorChanged(float[] values) {
-            gyroscopeXValue.setText("x: " + values[0]);
-            gyroscopeYValue.setText("y: " + values[1]);
-            gyroscopeZValue.setText("z: " + values[2]);
-        }
-    };
 
 
     @SuppressLint({"CutPasteId", "SetTextI18n"})
@@ -132,11 +101,11 @@ public class MainActivity extends AppCompatActivity {
         coordinatesYValue = findViewById(R.id.coordinatesYValue);
         coordinatesZValue = findViewById(R.id.coordinatesZValue);
 
-//        SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-//        Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-//        Sensor gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-//        sensorManager.registerListener(accelerometerListener, accelerometer, READINGRATE);
-//        sensorManager.registerListener(gyroscopeListener, gyroscope, READINGRATE);
+        SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        Sensor gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        sensorManager.registerListener(accelerometerListener, accelerometer, READINGRATE);
+        sensorManager.registerListener(gyroscopeListener, gyroscope, READINGRATE);
 
         Button setPositionButton = findViewById(R.id.setPositionButton);
         setPositionButton.setOnClickListener(v -> {
@@ -147,26 +116,13 @@ public class MainActivity extends AppCompatActivity {
             Log.e("Button", "clicked");
         });
     }
-    @Override
-    public void onResume() {
-        super.onResume();
-        gyroscopeSensor = new KalmanGyroscopeSensor(this);
-        accelerationSensor = new KalmanLinearAccelerationSensor(this);
 
-        accelerationSensor.register(accelerationListener);
-        gyroscopeSensor.register(gyroscopeListener);
-        gyroscopeSensor.start();
-        accelerationSensor.start();
+
+    protected float[] lowPass( float[] input, float[] output ) {
+        if ( output == null ) return input;
+        for ( int i = 0; i < input.length; i++ ) {
+            output[i] = output[i] + ALPHA * (input[i] - output[i]);
+        }
+        return output;
     }
-
-    @Override
-    public void onPause() {
-        gyroscopeSensor.unregister(gyroscopeListener);
-        accelerationSensor.unregister(accelerationListener);
-        gyroscopeSensor.stop();
-        accelerationSensor.stop();
-        super.onPause();
-    }
-
-
 }
