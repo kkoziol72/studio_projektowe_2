@@ -45,4 +45,13 @@ public class Acceleration {
         this.a_z = 0.0F;
     }
 
+    public float[] toArray() {
+        return new float[]{a_x, a_y, a_z};
+    }
+
+    public void readFromArray(float[] data) {
+        this.a_x = data[0];
+        this.a_y = data[1];
+        this.a_z = data[2];
+    }
 }
