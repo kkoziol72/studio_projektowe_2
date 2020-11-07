@@ -12,6 +12,13 @@
     android:orientation="vertical"
     android:padding="30sp">
 
+    <Button
+        android:id="@+id/setPositionButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Set position"
+        android:layout_marginBottom="30sp" />
+
     <TextView
         android:id="@+id/coordinates"
         android:layout_width="match_parent"
@@ -86,12 +93,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="30sp"></TextView>
 
-    <Button
-        android:id="@+id/setPositionButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Set position"
-        android:layout_marginTop="30sp" />
 </LinearLayout>
 
 </ScrollView>

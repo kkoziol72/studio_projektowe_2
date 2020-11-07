@@ -3,39 +3,39 @@ package com.example.studioprojektowe2.coordinates;
 
 public class Coordinates {
 
-    private Float x = 0.0F;
-    private Float y = 0.0F;
-    private Float z = 0.0F;
+    private Double x = 0.0;
+    private Double y = 0.0;
+    private Double z = 0.0;
 
     public Coordinates() {}
 
-    public Coordinates(Float x, Float y, Float z) {
+    public Coordinates(Double x, Double y, Double z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
-    public Float getX() {
+    public Double getX() {
         return x;
     }
 
-    public void setX(Float x) {
+    public void setX(Double x) {
         this.x = x;
     }
 
-    public Float getY() {
+    public Double getY() {
         return y;
     }
 
-    public void setY(Float y) {
+    public void setY(Double y) {
         this.y = y;
     }
 
-    public Float getZ() {
+    public Double getZ() {
         return z;
     }
 
-    public void setZ(Float z) {
+    public void setZ(Double z) {
         this.z = z;
     }
 
@@ -45,7 +45,7 @@ public class Coordinates {
         this.z = this.z + distance.getZ();
     }
 
-    public void setCoordinates(Acceleration acceleration, Float time, Distance distance,
+    public void setCoordinates(Acceleration acceleration, Double time, Distance distance,
                                Velocity velocity) {
         distance.updateDistance(acceleration, time, velocity);
         velocity.updateVelocity(acceleration, time);
@@ -60,9 +60,9 @@ public class Coordinates {
     }
 
     public void setCoordinatesTo0() {
-        this.x = 0.0F;
-        this.y = 0.0F;
-        this.z = 0.0F;
+        this.x = 0.0;
+        this.y = 0.0;
+        this.z = 0.0;
     }
 
 }

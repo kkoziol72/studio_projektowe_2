@@ -27,48 +27,75 @@ public class MainActivity extends AppCompatActivity {
             accelerometerXValue, accelerometerYValue, accelerometerZValue, accelerometerTitle,
             coordinatesTitle, coordinatesXValue, coordinatesYValue, coordinatesZValue;
 
-    final int READINGRATE = 200000;
+    final int READINGRATE = 20000000;
+    final int CALIBRATIONTIME = 100;
+    private final double ALPHA = 0.18;
 
     final AtomicBoolean pressed = new AtomicBoolean(false);
-    private final float ALPHA = 0.18f;
-    private float[] gyroscopeLastData;
+    private double[] gyroscopeLastData;
     Acceleration acceleration = new Acceleration();
     Distance distance = new Distance();
     Velocity velocity = new Velocity();
     Coordinates coordinates = new Coordinates();
     Rotation rotation = new Rotation();
+    private int calibrationMeter = 0;
+    private double accelerometerCalibrationX = 0.0;
+    private double accelerometerCalibrationY = 0.0;
+    private double accelerometerCalibrationZ = 0.0;
 
     private final SensorEventListener accelerometerListener = new SensorEventListener()
         {
             @SuppressLint("SetTextI18n")
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
-                acceleration.readFromArray(lowPass(sensorEvent.values, acceleration.toArray()));
-                accelerometerXValue.setText("x: " + sensorEvent.values[0]);
-                accelerometerYValue.setText("y: " + sensorEvent.values[1]);
-                accelerometerZValue.setText("z: " + sensorEvent.values[2]);
+                double[] sensorData = convertToDouble(sensorEvent.values);
+                if(calibrationMeter > CALIBRATIONTIME) {
+                    resetData();
+                    sensorData[0] -= accelerometerCalibrationX;
+                    sensorData[1] -= accelerometerCalibrationY;
+                    sensorData[2] -= accelerometerCalibrationZ;
 
-                acceleration.setA_x(sensorEvent.values[0]);
-                acceleration.setA_y(sensorEvent.values[1]);
-                acceleration.setA_z(sensorEvent.values[2]);
+                    acceleration.readFromArray(lowPass(sensorData, acceleration.toArray()));
+                    accelerometerXValue.setText("x: " + sensorData[0]);
+                    accelerometerYValue.setText("y: " + sensorData[1]);
+                    accelerometerZValue.setText("z: " + sensorData[2]);
 
-                coordinates.setCoordinates(acceleration, READINGRATE / 1000000.0F,
-                        distance, velocity);
-                coordinatesXValue.setText("x: " + coordinates.getX());
-                coordinatesYValue.setText("y: " + coordinates.getY());
-                coordinatesZValue.setText("z: " + coordinates.getZ());
+                    acceleration.setA_x(sensorData[0]);
+                    acceleration.setA_y(sensorData[1]);
+                    acceleration.setA_z(sensorData[2]);
+
+                    coordinates.setCoordinates(acceleration, READINGRATE / 1000000.0,
+                            distance, velocity);
+
+                    coordinatesXValue.setText("x: " + coordinates.getX());
+                    coordinatesYValue.setText("y: " + coordinates.getY());
+                    coordinatesZValue.setText("z: " + coordinates.getZ());
+                } else if(calibrationMeter == CALIBRATIONTIME) {
+                    calibrationMeter++;
+                    accelerometerCalibrationX = accelerometerCalibrationX / CALIBRATIONTIME;
+                    accelerometerCalibrationY = accelerometerCalibrationY / CALIBRATIONTIME;
+                    accelerometerCalibrationZ = accelerometerCalibrationZ / CALIBRATIONTIME;
+                } else {
+                    calibrationMeter++;
+                    accelerometerCalibrationX += sensorData[0];
+                    accelerometerCalibrationY += sensorData[1];
+                    accelerometerCalibrationZ += sensorData[2];
+                }
+                Log.e("scope", calibrationMeter + "");
             }
 
             @Override
             public void onAccuracyChanged(Sensor sensor, int i) {}
         };
+
     private final SensorEventListener gyroscopeListener = new SensorEventListener()
     {
         @SuppressLint("SetTextI18n")
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
-            gyroscopeLastData = lowPass(sensorEvent.values, gyroscopeLastData);
-            rotation.updateAngles(sensorEvent.values[0], sensorEvent.values[1], sensorEvent.values[2], sensorEvent.timestamp);
+            double[] sensorData = convertToDouble(sensorEvent.values);
+            gyroscopeLastData = lowPass(sensorData, gyroscopeLastData);
+            rotation.updateAngles(sensorData[0], sensorData[1], sensorData[2], sensorEvent.timestamp);
             gyroscopeXValue.setText("x: " + rotation.getXAngle() * 180 / Math.PI + " stopni");
             gyroscopeYValue.setText("y: " + rotation.getYAngle() * 180 / Math.PI + " stopni");
             gyroscopeZValue.setText("z: " + rotation.getZAngle() * 180 / Math.PI + " stopni");
@@ -115,20 +142,32 @@ public class MainActivity extends AppCompatActivity {
 
         Button setPositionButton = findViewById(R.id.setPositionButton);
         setPositionButton.setOnClickListener(v -> {
-            distance.setDistanceTo0();
-            velocity.setVelocityTo0();
-            acceleration.setAccelerationTo0();
-            coordinates.setCoordinatesTo0();
-            rotation.setAnglesTo0();
-            Log.e("Button", "clicked");
+            calibrationMeter = 0;
+            resetData();
         });
     }
 
-    protected float[] lowPass( float[] input, float[] output ) {
+    protected double[] lowPass( double[] input, double[] output ) {
         if ( output == null ) return input;
         for ( int i = 0; i < input.length; i++ ) {
             output[i] = output[i] + ALPHA * (input[i] - output[i]);
         }
         return output;
+    }
+
+    private double[] convertToDouble(float[] values){
+        double[] converted = new double[values.length];
+        for (int i = 0; i < values.length; i++) {
+            converted[i] = Double.valueOf(values[i]);
+        }
+        return converted;
+    }
+
+    private void resetData() {
+        distance.setDistanceTo0();
+        velocity.setVelocityTo0();
+        acceleration.setAccelerationTo0();
+        coordinates.setCoordinatesTo0();
+        rotation.setAnglesTo0();
     }
 }

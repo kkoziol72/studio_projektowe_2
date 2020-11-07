@@ -10,41 +10,41 @@ public class Rotation {
     long lastTimestamp = 0;
     float[] prevRotationMatrix = new float[9];
 
-    private Float x = 0.0F;
-    private Float y = 0.0F;
-    private Float z = 0.0F;
+    private Double x = 0.0;
+    private Double y = 0.0;
+    private Double z = 0.0;
 
     private double minOmega = 0;
 
     public Rotation() {}
 
-    public Rotation(Float x, Float y, Float z) {
+    public Rotation(Double x, Double y, Double z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
-    public Float getXAngle() {
+    public Double getXAngle() {
         return x;
     }
 
-    public void setXAngle(Float x) {
+    public void setXAngle(Double x) {
         this.x = x;
     }
 
-    public Float getYAngle() {
+    public Double getYAngle() {
         return y;
     }
 
-    public void setYAngle(Float y) {
+    public void setYAngle(Double y) {
         this.y = y;
     }
 
-    public Float getZAngle() {
+    public Double getZAngle() {
         return z;
     }
 
-    public void setZAngle(Float z) {
+    public void setZAngle(Double z) {
         this.z = z;
     }
 
@@ -98,9 +98,9 @@ public class Rotation {
     }
 
     public void setAnglesTo0() {
-        this.x = 0.0F;
-        this.y = 0.0F;
-        this.z = 0.0F;
+        this.x = 0.0;
+        this.y = 0.0;
+        this.z = 0.0;
     }
 
 }
