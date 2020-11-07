@@ -1,54 +1,46 @@
 package com.example.studioprojektowe2.coordinates;
 
+import java.util.ArrayList;
+import java.util.List;
 
 public class Distance {
 
-    private Double x = 0.0;
-    private Double y = 0.0;
-    private Double z = 0.0;
+    private List<Double> distanceComponents;
 
-    public Distance() {}
-
-    public Distance(Double x, Double y, Double z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    public Distance() {
+        this.distanceComponents = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            this.distanceComponents.add(0.0);
+        }
     }
 
-    public Double getX() {
-        return x;
+    public Distance(List<Double> distanceComponents) {
+        this.distanceComponents = distanceComponents;
     }
 
-    public void setX(Double x) {
-        this.x = x;
+    public List<Double> getDistanceComponents() {
+        return distanceComponents;
     }
 
-    public Double getY() {
-        return y;
+    public void setDistanceComponents(List<Double> distanceComponents) {
+        this.distanceComponents = distanceComponents;
     }
 
-    public void setY(Double y) {
-        this.y = y;
-    }
-
-    public Double getZ() {
-        return z;
-    }
-
-    public void setZ(Double z) {
-        this.z = z;
-    }
-
-    public void updateDistance(Acceleration acceleration, Double time, Velocity velocity) {
-        this.x = (velocity.getV_x() * time) + (0.5 * acceleration.getA_x() * time * time);
-        this.y = (velocity.getV_y() * time) + (0.5 * acceleration.getA_y() * time * time);
-        this.z = (velocity.getV_z() * time) + (0.5 * acceleration.getA_z() * time * time);
+    public void updateDistance(Acceleration acceleration, Double time, Velocity velocity) throws Exception {
+        if (acceleration.getAccelerationComponents().size() >= this.distanceComponents.size() && velocity.getVelocityComponents().size() >= this.distanceComponents.size()) {
+            for (int i = 0; i < this.distanceComponents.size(); i++) {
+                this.distanceComponents.set(i, (velocity.getVelocityComponents().get(i) * time) + (0.5 * acceleration.getAccelerationComponents().get(i) * time * time));
+            }
+        }
+        else {
+            throw new Exception("Number of acceleration components < Number of distance components OR Number of velocity components < Number of distance components");
+        }
     }
 
     public void setDistanceTo0() {
-        this.x = 0.0;
-        this.y = 0.0;
-        this.z = 0.0;
+        for (int i = 0; i < this.distanceComponents.size(); i++) {
+            this.distanceComponents.set(i, 0.0);
+        }
     }
 
 }

@@ -9,7 +9,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -27,66 +26,80 @@ public class MainActivity extends AppCompatActivity {
             accelerometerXValue, accelerometerYValue, accelerometerZValue, accelerometerTitle,
             coordinatesTitle, coordinatesXValue, coordinatesYValue, coordinatesZValue;
 
-    final int READINGRATE = 20000000;
-    final int CALIBRATIONTIME = 100;
+    final int READINGRATE = 2000;
+    final int CALIBRATIONTIME = 2000;
+    final int SLOWERRATE = 50;
     private final double ALPHA = 0.18;
 
     final AtomicBoolean pressed = new AtomicBoolean(false);
     private double[] gyroscopeLastData;
+
     Acceleration acceleration = new Acceleration();
     Distance distance = new Distance();
     Velocity velocity = new Velocity();
     Coordinates coordinates = new Coordinates();
     Rotation rotation = new Rotation();
+
     private int calibrationMeter = 0;
     private double accelerometerCalibrationX = 0.0;
     private double accelerometerCalibrationY = 0.0;
     private double accelerometerCalibrationZ = 0.0;
+    private int slower = 0;
 
     private final SensorEventListener accelerometerListener = new SensorEventListener()
-        {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onSensorChanged(SensorEvent sensorEvent) {
-                double[] sensorData = convertToDouble(sensorEvent.values);
-                if(calibrationMeter > CALIBRATIONTIME) {
-                    resetData();
-                    sensorData[0] -= accelerometerCalibrationX;
-                    sensorData[1] -= accelerometerCalibrationY;
-                    sensorData[2] -= accelerometerCalibrationZ;
+    {
+        @SuppressLint("SetTextI18n")
+        @Override
+        public void onSensorChanged(SensorEvent sensorEvent) {
+            double[] sensorData = convertToDouble(sensorEvent.values);
+            if(calibrationMeter > CALIBRATIONTIME) {
+                coordinatesTitle.setText("Współrzędne: ");
+                accelerometerTitle.setText("Akcelerometr: ");
+                resetData();
+                sensorData[0] -= accelerometerCalibrationX;
+                sensorData[1] -= accelerometerCalibrationY;
+                sensorData[2] -= accelerometerCalibrationZ;
 
+                try {
                     acceleration.readFromArray(lowPass(sensorData, acceleration.toArray()));
-                    accelerometerXValue.setText("x: " + sensorData[0]);
-                    accelerometerYValue.setText("y: " + sensorData[1]);
-                    accelerometerZValue.setText("z: " + sensorData[2]);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-                    acceleration.setA_x(sensorData[0]);
-                    acceleration.setA_y(sensorData[1]);
-                    acceleration.setA_z(sensorData[2]);
+                for (int i = 0; i < sensorData.length; i++) {
+                    acceleration.getAccelerationComponents().set(i, sensorData[i]);
+                }
 
+                try {
                     coordinates.setCoordinates(acceleration, READINGRATE / 1000000.0,
                             distance, velocity);
-
-                    coordinatesXValue.setText("x: " + coordinates.getX());
-                    coordinatesYValue.setText("y: " + coordinates.getY());
-                    coordinatesZValue.setText("z: " + coordinates.getZ());
-                } else if(calibrationMeter == CALIBRATIONTIME) {
-                    calibrationMeter++;
-                    accelerometerCalibrationX = accelerometerCalibrationX / CALIBRATIONTIME;
-                    accelerometerCalibrationY = accelerometerCalibrationY / CALIBRATIONTIME;
-                    accelerometerCalibrationZ = accelerometerCalibrationZ / CALIBRATIONTIME;
-                } else {
-                    calibrationMeter++;
-                    accelerometerCalibrationX += sensorData[0];
-                    accelerometerCalibrationY += sensorData[1];
-                    accelerometerCalibrationZ += sensorData[2];
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                Log.e("scope", calibrationMeter + "");
-            }
 
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int i) {}
-        };
+            } else if(calibrationMeter == CALIBRATIONTIME) {
+                calibrationMeter++;
+                accelerometerCalibrationX = accelerometerCalibrationX / CALIBRATIONTIME;
+                accelerometerCalibrationY = accelerometerCalibrationY / CALIBRATIONTIME;
+                accelerometerCalibrationZ = accelerometerCalibrationZ / CALIBRATIONTIME;
+            } else {
+                coordinatesTitle.setText("Współrzędne: TRWA KALIBRACJA");
+                accelerometerTitle.setText("Akcelerometr: TRWA KALIBRACJA");
+                calibrationMeter++;
+                accelerometerCalibrationX += sensorData[0];
+                accelerometerCalibrationY += sensorData[1];
+                accelerometerCalibrationZ += sensorData[2];
+            }
+            slower++;
+            if(slower > SLOWERRATE){
+                slower = 0;
+                showCoordinates(sensorData);
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int i) {}
+    };
 
     private final SensorEventListener gyroscopeListener = new SensorEventListener()
     {
@@ -96,9 +109,9 @@ public class MainActivity extends AppCompatActivity {
             double[] sensorData = convertToDouble(sensorEvent.values);
             gyroscopeLastData = lowPass(sensorData, gyroscopeLastData);
             rotation.updateAngles(sensorData[0], sensorData[1], sensorData[2], sensorEvent.timestamp);
-            gyroscopeXValue.setText("x: " + rotation.getXAngle() * 180 / Math.PI + " stopni");
-            gyroscopeYValue.setText("y: " + rotation.getYAngle() * 180 / Math.PI + " stopni");
-            gyroscopeZValue.setText("z: " + rotation.getZAngle() * 180 / Math.PI + " stopni");
+            gyroscopeXValue.setText("x: " + rotation.getRotationComponents().get(0) * 180 / Math.PI + " stopni");
+            gyroscopeYValue.setText("y: " + rotation.getRotationComponents().get(1) * 180 / Math.PI + " stopni");
+            gyroscopeZValue.setText("z: " + rotation.getRotationComponents().get(2) * 180 / Math.PI + " stopni");
             gyroscopeXValue.setText("x: " + gyroscopeLastData[0]);
             gyroscopeYValue.setText("y: " + gyroscopeLastData[1]);
             gyroscopeZValue.setText("z: " + gyroscopeLastData[2]);
@@ -158,16 +171,30 @@ public class MainActivity extends AppCompatActivity {
     private double[] convertToDouble(float[] values){
         double[] converted = new double[values.length];
         for (int i = 0; i < values.length; i++) {
-            converted[i] = Double.valueOf(values[i]);
+            converted[i] = (double) values[i];
         }
         return converted;
     }
 
     private void resetData() {
+        accelerometerCalibrationX = 0;
+        accelerometerCalibrationY = 0;
+        accelerometerCalibrationZ = 0;
         distance.setDistanceTo0();
         velocity.setVelocityTo0();
         acceleration.setAccelerationTo0();
         coordinates.setCoordinatesTo0();
         rotation.setAnglesTo0();
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void showCoordinates(double[] sensorData){
+        accelerometerXValue.setText("x: " + sensorData[0]);
+        accelerometerYValue.setText("y: " + sensorData[1]);
+        accelerometerZValue.setText("z: " + sensorData[2]);
+
+        coordinatesXValue.setText("x: " + coordinates.getCoordinatesComponents().get(0));
+        coordinatesYValue.setText("y: " + coordinates.getCoordinatesComponents().get(1));
+        coordinatesZValue.setText("z: " + coordinates.getCoordinatesComponents().get(2));
     }
 }

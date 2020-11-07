@@ -2,6 +2,9 @@ package com.example.studioprojektowe2.coordinates;
 
 import android.hardware.SensorManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static java.lang.Math.sin;
 
 
@@ -10,42 +13,27 @@ public class Rotation {
     long lastTimestamp = 0;
     float[] prevRotationMatrix = new float[9];
 
-    private Double x = 0.0;
-    private Double y = 0.0;
-    private Double z = 0.0;
+    private List<Double> rotationComponents;
 
     private double minOmega = 0;
 
-    public Rotation() {}
-
-    public Rotation(Double x, Double y, Double z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    public Rotation() {
+        this.rotationComponents = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            this.rotationComponents.add(0.0);
+        }
     }
 
-    public Double getXAngle() {
-        return x;
+    public Rotation(List<Double> rotationComponents) {
+        this.rotationComponents = rotationComponents;
     }
 
-    public void setXAngle(Double x) {
-        this.x = x;
+    public List<Double> getRotationComponents() {
+        return rotationComponents;
     }
 
-    public Double getYAngle() {
-        return y;
-    }
-
-    public void setYAngle(Double y) {
-        this.y = y;
-    }
-
-    public Double getZAngle() {
-        return z;
-    }
-
-    public void setZAngle(Double z) {
-        this.z = z;
+    public void setRotationComponents(List<Double> rotationComponents) {
+        this.rotationComponents = rotationComponents;
     }
 
     public void updateAngles(double dataX, double dataY, double dataZ, long timestamp) {
@@ -75,6 +63,7 @@ public class Rotation {
             double thetaOverTwo = omega * diffInSeconds / 2.0f;
             double sinThetaOverTwo = sin(thetaOverTwo);
             double cosThetaOverTwo = Math.cos(thetaOverTwo);
+
             deltaRotationVector[0] = (float) (sinThetaOverTwo * dataX);
             deltaRotationVector[1] = (float) (sinThetaOverTwo * dataY);
             deltaRotationVector[2] = (float) (sinThetaOverTwo * dataZ);
@@ -84,23 +73,29 @@ public class Rotation {
             float[] angleChange = new float[3];
             SensorManager.getAngleChange(angleChange, deltaRotationMatrix, prevRotationMatrix);
 
-            this.x = this.x + angleChange[1];
-            this.y = this.y + angleChange[2];
-            this.z = this.z + angleChange[0];
+            if (this.rotationComponents.size() >= angleChange.length) {
+                this.rotationComponents.set(0, this.rotationComponents.get(0) + angleChange[1]);
+                this.rotationComponents.set(1, this.rotationComponents.get(1) + angleChange[2]);
+                this.rotationComponents.set(2, this.rotationComponents.get(2) + angleChange[0]);
+            }
+
+//            this.x = this.x + angleChange[1];
+//            this.y = this.y + angleChange[2];
+//            this.z = this.z + angleChange[0];
 
 //            this.x = this.x + dataX * diffInSeconds;//- previousDataX;
 //            this.y = this.y + dataY * diffInSeconds;//- previousDataY;
 //            this.z = this.z + dataZ * diffInSeconds;//- previousDataZ;
         }
+
         this.lastTimestamp = timestamp;
         this.prevRotationMatrix = deltaRotationMatrix;
-
     }
 
     public void setAnglesTo0() {
-        this.x = 0.0;
-        this.y = 0.0;
-        this.z = 0.0;
+        for (int i = 0; i < this.rotationComponents.size(); i++) {
+            this.rotationComponents.set(i, 0.0);
+        }
     }
 
 }

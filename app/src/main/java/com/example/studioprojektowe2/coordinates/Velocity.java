@@ -1,54 +1,46 @@
 package com.example.studioprojektowe2.coordinates;
 
+import java.util.ArrayList;
+import java.util.List;
 
 public class Velocity {
 
-    private Double v_x = 0.0;
-    private Double v_y = 0.0;
-    private Double v_z = 0.0;
+    private List<Double> velocityComponents;
 
-    public Velocity() {}
-
-    public Velocity(Double v_x, Double v_y, Double v_z) {
-        this.v_x = v_x;
-        this.v_y = v_y;
-        this.v_z = v_z;
+    public Velocity() {
+        this.velocityComponents = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            this.velocityComponents.add(0.0);
+        }
     }
 
-    public Double getV_x() {
-        return v_x;
+    public Velocity(List<Double> velocityComponents) {
+        this.velocityComponents = velocityComponents;
     }
 
-    public void setV_x(Double v_x) {
-        this.v_x = v_x;
+    public List<Double> getVelocityComponents() {
+        return velocityComponents;
     }
 
-    public Double getV_y() {
-        return v_y;
+    public void setVelocityComponents(List<Double> velocityComponents) {
+        this.velocityComponents = velocityComponents;
     }
 
-    public void setV_y(Double v_y) {
-        this.v_y = v_y;
-    }
-
-    public Double getV_z() {
-        return v_z;
-    }
-
-    public void setV_z(Double v_z) {
-        this.v_z = v_z;
-    }
-
-    public void updateVelocity(Acceleration acceleration, Double time) {
-        this.v_x = this.v_x + (acceleration.getA_x() * time);
-        this.v_y = this.v_y + (acceleration.getA_y() * time);
-        this.v_z = this.v_z + (acceleration.getA_z() * time);
+    public void updateVelocity(Acceleration acceleration, Double time) throws Exception {
+        if (acceleration.getAccelerationComponents().size() >= this.getVelocityComponents().size()) {
+            for (int i = 0; i < this.velocityComponents.size(); i++) {
+                this.velocityComponents.set(i, this.getVelocityComponents().get(i) + (acceleration.getAccelerationComponents().get(i) * time));
+            }
+        }
+        else {
+            throw new Exception("Number of acceleration components < Number of velocity components");
+        }
     }
 
     public void setVelocityTo0() {
-        this.v_x = 0.0;
-        this.v_y = 0.0;
-        this.v_z = 0.0;
+        for (int i = 0; i < this.velocityComponents.size(); i++) {
+            this.velocityComponents.set(i, 0.0);
+        }
     }
 
 }
