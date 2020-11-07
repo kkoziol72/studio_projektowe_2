@@ -27,8 +27,9 @@ public class MainActivity extends AppCompatActivity {
             accelerometerXValue, accelerometerYValue, accelerometerZValue, accelerometerTitle,
             coordinatesTitle, coordinatesXValue, coordinatesYValue, coordinatesZValue;
 
-    final int READINGRATE = 20000000;
-    final int CALIBRATIONTIME = 100;
+    final int READINGRATE = 2000;
+    final int CALIBRATIONTIME = 2000;
+    final int SLOWERRATE = 50;
     private final double ALPHA = 0.18;
 
     final AtomicBoolean pressed = new AtomicBoolean(false);
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private double accelerometerCalibrationX = 0.0;
     private double accelerometerCalibrationY = 0.0;
     private double accelerometerCalibrationZ = 0.0;
+    private int slower = 0;
 
     private final SensorEventListener accelerometerListener = new SensorEventListener()
         {
@@ -50,15 +52,14 @@ public class MainActivity extends AppCompatActivity {
             public void onSensorChanged(SensorEvent sensorEvent) {
                 double[] sensorData = convertToDouble(sensorEvent.values);
                 if(calibrationMeter > CALIBRATIONTIME) {
+                    coordinatesTitle.setText("Współrzędne: ");
+                    accelerometerTitle.setText("Akcelerometr: ");
                     resetData();
                     sensorData[0] -= accelerometerCalibrationX;
                     sensorData[1] -= accelerometerCalibrationY;
                     sensorData[2] -= accelerometerCalibrationZ;
 
                     acceleration.readFromArray(lowPass(sensorData, acceleration.toArray()));
-                    accelerometerXValue.setText("x: " + sensorData[0]);
-                    accelerometerYValue.setText("y: " + sensorData[1]);
-                    accelerometerZValue.setText("z: " + sensorData[2]);
 
                     acceleration.setA_x(sensorData[0]);
                     acceleration.setA_y(sensorData[1]);
@@ -67,21 +68,24 @@ public class MainActivity extends AppCompatActivity {
                     coordinates.setCoordinates(acceleration, READINGRATE / 1000000.0,
                             distance, velocity);
 
-                    coordinatesXValue.setText("x: " + coordinates.getX());
-                    coordinatesYValue.setText("y: " + coordinates.getY());
-                    coordinatesZValue.setText("z: " + coordinates.getZ());
                 } else if(calibrationMeter == CALIBRATIONTIME) {
                     calibrationMeter++;
                     accelerometerCalibrationX = accelerometerCalibrationX / CALIBRATIONTIME;
                     accelerometerCalibrationY = accelerometerCalibrationY / CALIBRATIONTIME;
                     accelerometerCalibrationZ = accelerometerCalibrationZ / CALIBRATIONTIME;
                 } else {
+                    coordinatesTitle.setText("Współrzędne: TRWA KALIBRACJA");
+                    accelerometerTitle.setText("Akcelerometr: TRWA KALIBRACJA");
                     calibrationMeter++;
                     accelerometerCalibrationX += sensorData[0];
                     accelerometerCalibrationY += sensorData[1];
                     accelerometerCalibrationZ += sensorData[2];
                 }
-                Log.e("scope", calibrationMeter + "");
+                slower++;
+                if(slower > SLOWERRATE){
+                    slower = 0;
+                    showCoordinates(sensorData);
+                }
             }
 
             @Override
@@ -164,10 +168,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void resetData() {
+        accelerometerCalibrationX = 0;
+        accelerometerCalibrationY = 0;
+        accelerometerCalibrationZ = 0;
         distance.setDistanceTo0();
         velocity.setVelocityTo0();
         acceleration.setAccelerationTo0();
         coordinates.setCoordinatesTo0();
         rotation.setAnglesTo0();
+    }
+
+    private void showCoordinates(double[] sensorData){
+        accelerometerXValue.setText("x: " + sensorData[0]);
+        accelerometerYValue.setText("y: " + sensorData[1]);
+        accelerometerZValue.setText("z: " + sensorData[2]);
+
+        coordinatesXValue.setText("x: " + coordinates.getX());
+        coordinatesYValue.setText("y: " + coordinates.getY());
+        coordinatesZValue.setText("z: " + coordinates.getZ());
     }
 }
