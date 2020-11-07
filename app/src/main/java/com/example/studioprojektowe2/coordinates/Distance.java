@@ -45,6 +45,18 @@ public class Distance {
         this.z = (velocity.getV_z() * time) + (0.5F * acceleration.getA_z() * time * time);
     }
 
+    public void updateDistanceX(Acceleration acceleration, Float time, Velocity velocity) {
+        this.x = (velocity.getV_x() * time) + (0.5F * acceleration.getA_x() * time * time);
+    }
+
+    public void updateDistanceY(Acceleration acceleration, Float time, Velocity velocity) {
+        this.y = (velocity.getV_y() * time) + (0.5F * acceleration.getA_y() * time * time);
+    }
+
+    public void updateDistanceZ(Acceleration acceleration, Float time, Velocity velocity) {
+        this.z = (velocity.getV_z() * time) + (0.5F * acceleration.getA_z() * time * time);
+    }
+
     public void setDistanceTo0() {
         this.x = 0.0F;
         this.y = 0.0F;

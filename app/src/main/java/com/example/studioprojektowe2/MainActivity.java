@@ -17,10 +17,8 @@ import com.example.studioprojektowe2.coordinates.Acceleration;
 import com.example.studioprojektowe2.coordinates.Coordinates;
 import com.example.studioprojektowe2.coordinates.Distance;
 import com.example.studioprojektowe2.coordinates.Velocity;
-import com.kircherelectronics.fsensor.observer.SensorSubject;
-import com.kircherelectronics.fsensor.sensor.FSensor;
-import com.kircherelectronics.fsensor.sensor.acceleration.KalmanLinearAccelerationSensor;
-import com.kircherelectronics.fsensor.sensor.gyroscope.KalmanGyroscopeSensor;
+import com.example.studioprojektowe2.filter.AccelerationKalmanFilter;
+
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -30,21 +28,20 @@ public class MainActivity extends AppCompatActivity {
             accelerometerXValue, accelerometerYValue, accelerometerZValue, accelerometerTitle,
             coordinatesTitle, coordinatesXValue, coordinatesYValue, coordinatesZValue;
 
-    final int READINGRATE = 200000;
+    public static final int READINGRATE = 200000;
     final AtomicBoolean pressed = new AtomicBoolean(false);
-    private final float ALPHA = 0.18f;
-    private float[] gyroscopeLastData;
     Acceleration acceleration = new Acceleration();
     Distance distance = new Distance();
     Velocity velocity = new Velocity();
     Coordinates coordinates = new Coordinates();
+    private final AccelerationKalmanFilter filter = new AccelerationKalmanFilter();
 
     private final SensorEventListener accelerometerListener = new SensorEventListener()
         {
             @SuppressLint("SetTextI18n")
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
-                acceleration.readFromArray(lowPass(sensorEvent.values, acceleration.toArray()));
+                double[] values = filter.estimateCoordinates(sensorEvent.values);
 
                 accelerometerXValue.setText("x: " + sensorEvent.values[0]);
                 accelerometerYValue.setText("y: " + sensorEvent.values[1]);
@@ -65,10 +62,34 @@ public class MainActivity extends AppCompatActivity {
         @SuppressLint("SetTextI18n")
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
-            gyroscopeLastData = lowPass(sensorEvent.values, gyroscopeLastData);
-            gyroscopeXValue.setText("x: " + gyroscopeLastData[0]);
-            gyroscopeYValue.setText("y: " + gyroscopeLastData[1]);
-            gyroscopeZValue.setText("z: " + gyroscopeLastData[2]);
+            double[] values = filter.estimateCoordinates(sensorEvent.values);
+            accelerometerXValue.setText("x: " + values[0]);
+            accelerometerYValue.setText("y: " + values[1]);
+            accelerometerZValue.setText("z: " + values[2]);
+
+            if (Math.abs(acceleration.getA_x() - values[0]) > 0.1 && Math.abs(acceleration.getA_x() - values[0]) < 9.0) {
+                coordinates.setCoordinateX(acceleration, READINGRATE / 1000000.0F,
+                        distance, velocity);
+            }
+
+            if (Math.abs(acceleration.getA_y() - values[1]) > 0.1 && Math.abs(acceleration.getA_y() - values[1]) < 9.0) {
+                coordinates.setCoordinateY(acceleration, READINGRATE / 1000000.0F,
+                        distance, velocity);
+            }
+
+            if (Math.abs(acceleration.getA_z() - values[2]) > 0.1 && Math.abs(acceleration.getA_z() - values[2]) < 9.0) {
+                coordinates.setCoordinateZ(acceleration, READINGRATE / 1000000.0F,
+                        distance, velocity);
+            }
+
+            acceleration.setA_x(((float) values[0]));
+            acceleration.setA_y(((float) values[1]));
+            acceleration.setA_z(((float) values[0]));
+
+            coordinatesXValue.setText("x: " + coordinates.getX());
+            coordinatesYValue.setText("y: " + coordinates.getY());
+            coordinatesZValue.setText("z: " + coordinates.getZ());
+
         }
 
         @Override
@@ -115,14 +136,5 @@ public class MainActivity extends AppCompatActivity {
             coordinates.setCoordinatesTo0();
             Log.e("Button", "clicked");
         });
-    }
-
-
-    protected float[] lowPass( float[] input, float[] output ) {
-        if ( output == null ) return input;
-        for ( int i = 0; i < input.length; i++ ) {
-            output[i] = output[i] + ALPHA * (input[i] - output[i]);
-        }
-        return output;
     }
 }
