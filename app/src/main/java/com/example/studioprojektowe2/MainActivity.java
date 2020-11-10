@@ -17,6 +17,7 @@ import com.example.studioprojektowe2.coordinates.Coordinates;
 import com.example.studioprojektowe2.coordinates.Distance;
 import com.example.studioprojektowe2.coordinates.Rotation;
 import com.example.studioprojektowe2.coordinates.Velocity;
+import com.example.studioprojektowe2.filter.AccelerationKalmanFilter;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -26,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
             accelerometerXValue, accelerometerYValue, accelerometerZValue, accelerometerTitle,
             coordinatesTitle, coordinatesXValue, coordinatesYValue, coordinatesZValue;
 
-    final int READINGRATE = 2000;
+    public final static int READINGRATE = 2000;
     final int CALIBRATIONTIME = 2000;
     final int SLOWERRATE = 50;
     private final double ALPHA = 0.18;
@@ -46,12 +47,15 @@ public class MainActivity extends AppCompatActivity {
     private double accelerometerCalibrationZ = 0.0;
     private int slower = 0;
 
+    private final AccelerationKalmanFilter filter = new AccelerationKalmanFilter();
+
     private final SensorEventListener accelerometerListener = new SensorEventListener()
     {
         @SuppressLint("SetTextI18n")
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
             double[] sensorData = convertToDouble(sensorEvent.values);
+
             if(calibrationMeter > CALIBRATIONTIME) {
                 coordinatesTitle.setText("Współrzędne: ");
                 accelerometerTitle.setText("Akcelerometr: ");
@@ -73,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     coordinates.setCoordinates(acceleration, READINGRATE / 1000000.0,
                             distance, velocity);
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
