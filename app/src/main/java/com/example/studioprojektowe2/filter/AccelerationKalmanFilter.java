@@ -80,17 +80,17 @@ public class AccelerationKalmanFilter {
                 { 0d, 0d, Math.pow(measurementNoise, 2d) }            //     [ 0    0  n^2 ]
         });
 
-        PO = new Array2DRowRealMatrix(new double[][]{
-                { 1d, 1d, 1d, 1d, 1d, 1d },
-                { 1d, 1d, 1d, 1d, 1d, 1d },
-                { 1d, 1d, 1d, 1d, 1d, 1d },
-                { 1d, 1d, 1d, 1d, 1d, 1d },
-                { 1d, 1d, 1d, 1d, 1d, 1d },
-                { 1d, 1d, 1d, 1d, 1d, 1d }
-        });
-        x = new ArrayRealVector(new double[] { 0d, 0d, 0d, 0d, 0d, 0d });
+//        PO = new Array2DRowRealMatrix(new double[][]{
+//                { 1d, 1d, 1d, 1d, 1d, 1d },
+//                { 1d, 1d, 1d, 1d, 1d, 1d },
+//                { 1d, 1d, 1d, 1d, 1d, 1d },
+//                { 1d, 1d, 1d, 1d, 1d, 1d },
+//                { 1d, 1d, 1d, 1d, 1d, 1d },
+//                { 1d, 1d, 1d, 1d, 1d, 1d }
+//        });
+        x = new ArrayRealVector(new double[] { 1d, 1d, 1d, 1d, 1d, 1d });
 
-        ProcessModel processModel = new DefaultProcessModel(A, B, Q, x, PO);
+        ProcessModel processModel = new DefaultProcessModel(A, B, Q, x, null);
         MeasurementModel measurementModel = new DefaultMeasurementModel(H, R);
         filter = new KalmanFilter(processModel, measurementModel);
     }
