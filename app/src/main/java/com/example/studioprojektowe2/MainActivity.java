@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         @SuppressLint("SetTextI18n")
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
-            double[] sensorData = convertToDouble(sensorEvent.values);
+            double[] sensorData = filter.estimateCoordinates(sensorEvent.values);
 
             if(calibrationMeter > CALIBRATIONTIME) {
                 coordinatesTitle.setText("Współrzędne: ");
@@ -65,12 +65,12 @@ public class MainActivity extends AppCompatActivity {
                 sensorData[2] -= accelerometerCalibrationZ;
 
                 try {
-                    acceleration.readFromArray(lowPass(sensorData, acceleration.toArray()));
+                    acceleration.readFromArray(sensorData);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
-                for (int i = 0; i < sensorData.length; i++) {
+                for (int i = 0; i < acceleration.getAccelerationComponents().size(); i++) {
                     acceleration.getAccelerationComponents().set(i, sensorData[i]);
                 }
 
@@ -111,7 +111,8 @@ public class MainActivity extends AppCompatActivity {
         @SuppressLint("SetTextI18n")
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
-            double[] sensorData = convertToDouble(sensorEvent.values);
+            double[] sensorData = filter.estimateCoordinates(sensorEvent.values);
+
             gyroscopeLastData = lowPass(sensorData, gyroscopeLastData);
             rotation.updateAngles(sensorData[0], sensorData[1], sensorData[2], sensorEvent.timestamp);
             gyroscopeXValue.setText("x: " + rotation.getRotationComponents().get(0) * 180 / Math.PI + " stopni");
