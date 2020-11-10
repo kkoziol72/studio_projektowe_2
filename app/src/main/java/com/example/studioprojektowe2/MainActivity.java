@@ -49,14 +49,13 @@ public class MainActivity extends AppCompatActivity {
 
     private final AccelerationKalmanFilter filter = new AccelerationKalmanFilter();
 
-    private final SensorEventListener accelerometerListener = new SensorEventListener()
-    {
+    private final SensorEventListener accelerometerListener = new SensorEventListener() {
         @SuppressLint("SetTextI18n")
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
             double[] sensorData = filter.estimateCoordinates(sensorEvent.values);
 
-            if(calibrationMeter > CALIBRATIONTIME) {
+            if (calibrationMeter > CALIBRATIONTIME) {
                 coordinatesTitle.setText("Współrzędne: ");
                 accelerometerTitle.setText("Akcelerometr: ");
                 resetData();
@@ -82,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-            } else if(calibrationMeter == CALIBRATIONTIME) {
+            } else if (calibrationMeter == CALIBRATIONTIME) {
                 calibrationMeter++;
                 accelerometerCalibrationX = accelerometerCalibrationX / CALIBRATIONTIME;
                 accelerometerCalibrationY = accelerometerCalibrationY / CALIBRATIONTIME;
@@ -96,23 +95,23 @@ public class MainActivity extends AppCompatActivity {
                 accelerometerCalibrationZ += sensorData[2];
             }
             slower++;
-            if(slower > SLOWERRATE){
+            if (slower > SLOWERRATE) {
                 slower = 0;
                 showCoordinates(sensorData);
             }
         }
 
         @Override
-        public void onAccuracyChanged(Sensor sensor, int i) {}
+        public void onAccuracyChanged(Sensor sensor, int i) {
+        }
     };
 
-    private final SensorEventListener gyroscopeListener = new SensorEventListener()
-    {
+    private final SensorEventListener gyroscopeListener = new SensorEventListener() {
         @SuppressLint("SetTextI18n")
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
-            double[] sensorData = filter.estimateCoordinates(sensorEvent.values);
-
+            //double[] sensorData = filter.estimateCoordinates(sensorEvent.values);
+            double[] sensorData = convertFloatsToDoubles(sensorEvent.values);
             gyroscopeLastData = lowPass(sensorData, gyroscopeLastData);
             rotation.updateAngles(sensorData[0], sensorData[1], sensorData[2], sensorEvent.timestamp);
             gyroscopeXValue.setText("x: " + rotation.getRotationComponents().get(0) * 180 / Math.PI + " stopni");
@@ -124,9 +123,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onAccuracyChanged(Sensor sensor, int i) {}
+        public void onAccuracyChanged(Sensor sensor, int i) {
+        }
     };
-
 
 
     @SuppressLint({"CutPasteId", "SetTextI18n"})
@@ -166,15 +165,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    protected double[] lowPass( double[] input, double[] output ) {
-        if ( output == null ) return input;
-        for ( int i = 0; i < input.length; i++ ) {
+    protected double[] lowPass(double[] input, double[] output) {
+        if (output == null) return input;
+        for (int i = 0; i < input.length; i++) {
             output[i] = output[i] + ALPHA * (input[i] - output[i]);
         }
         return output;
     }
 
-    private double[] convertToDouble(float[] values){
+    private double[] convertToDouble(float[] values) {
         double[] converted = new double[values.length];
         for (int i = 0; i < values.length; i++) {
             converted[i] = (double) values[i];
@@ -194,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressLint("SetTextI18n")
-    private void showCoordinates(double[] sensorData){
+    private void showCoordinates(double[] sensorData) {
         accelerometerXValue.setText("x: " + sensorData[0]);
         accelerometerYValue.setText("y: " + sensorData[1]);
         accelerometerZValue.setText("z: " + sensorData[2]);
@@ -202,5 +201,16 @@ public class MainActivity extends AppCompatActivity {
         coordinatesXValue.setText("x: " + coordinates.getCoordinatesComponents().get(0));
         coordinatesYValue.setText("y: " + coordinates.getCoordinatesComponents().get(1));
         coordinatesZValue.setText("z: " + coordinates.getCoordinatesComponents().get(2));
+    }
+
+    public static double[] convertFloatsToDoubles(float[] input) {
+        if (input == null) {
+            return null;
+        }
+        double[] output = new double[input.length];
+        for (int i = 0; i < input.length; i++) {
+            output[i] = input[i];
+        }
+        return output;
     }
 }
