@@ -53,21 +53,22 @@ public class MainActivity extends AppCompatActivity {
         @SuppressLint("SetTextI18n")
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
-            double[] sensorData = filter.estimateCoordinates(sensorEvent.values);
+            double[] sensorData = convertFloatsToDoubles(sensorEvent.values);
 
             if (calibrationMeter > CALIBRATIONTIME) {
+                double[] filteredValues = filter.estimateCoordinates(sensorEvent.values);
                 coordinatesTitle.setText("Współrzędne: ");
                 accelerometerTitle.setText("Akcelerometr: ");
                 resetData();
-                sensorData[0] -= accelerometerCalibrationX;
-                sensorData[1] -= accelerometerCalibrationY;
-                sensorData[2] -= accelerometerCalibrationZ;
+                filteredValues[0] -= accelerometerCalibrationX;
+                filteredValues[1] -= accelerometerCalibrationY;
+                filteredValues[2] -= accelerometerCalibrationZ;
 
-                acceleration.readFromArray(sensorData);
+                acceleration.readFromArray(filteredValues);
 
 
                 for (int i = 0; i < acceleration.getAccelerationComponents().size(); i++) {
-                    acceleration.getAccelerationComponents().set(i, sensorData[i]);
+                    acceleration.getAccelerationComponents().set(i, filteredValues[i]);
                 }
 
                 coordinates.setCoordinates(acceleration, READINGRATE / 1000000.0,
