@@ -26,14 +26,16 @@ public class Velocity {
         this.velocityComponents = velocityComponents;
     }
 
-    public void updateVelocity(Acceleration acceleration, Double time) throws Exception {
+    public void updateVelocity(Acceleration acceleration, Double time) {
         if (acceleration.getAccelerationComponents().size() >= this.getVelocityComponents().size()) {
             for (int i = 0; i < this.velocityComponents.size(); i++) {
                 this.velocityComponents.set(i, this.getVelocityComponents().get(i) + (acceleration.getAccelerationComponents().get(i) * time));
             }
         }
         else {
-            throw new Exception("Number of acceleration components < Number of velocity components");
+            for (int i = 0; i < acceleration.getAccelerationComponents().size(); i++) {
+                this.velocityComponents.set(i, this.getVelocityComponents().get(i) + (acceleration.getAccelerationComponents().get(i) * time));
+            }
         }
     }
 

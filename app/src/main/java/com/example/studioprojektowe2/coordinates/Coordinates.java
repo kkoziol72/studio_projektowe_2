@@ -26,19 +26,21 @@ public class Coordinates {
         this.coordinatesComponents = coordinatesComponents;
     }
 
-    public void updateCoordinates(Distance distance) throws Exception {
+    public void updateCoordinates(Distance distance) {
         if (distance.getDistanceComponents().size() >= this.coordinatesComponents.size()) {
             for (int i = 0; i < this.getCoordinatesComponents().size(); i++) {
                 this.getCoordinatesComponents().set(i, this.coordinatesComponents.get(i) + distance.getDistanceComponents().get(i));
             }
         }
         else {
-            throw new Exception("Number of distance components < Number of coordinates components");
+            for (int i = 0; i < distance.getDistanceComponents().size(); i++) {
+                this.getCoordinatesComponents().set(i, this.coordinatesComponents.get(i) + distance.getDistanceComponents().get(i));
+            }
         }
     }
 
     public void setCoordinates(Acceleration acceleration, Double time, Distance distance,
-                               Velocity velocity) throws Exception {
+                               Velocity velocity) {
         distance.updateDistance(acceleration, time, velocity);
         velocity.updateVelocity(acceleration, time);
         updateCoordinates(distance);

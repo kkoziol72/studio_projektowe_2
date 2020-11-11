@@ -40,18 +40,16 @@ public class Acceleration {
         return array;
     }
 
-    public void readFromArray(double[] data) throws Exception {
+    public void readFromArray(double[] data) {
         if (this.accelerationComponents.size() >= data.length) {
             for (int i = 0; i < data.length; i++) {
                 this.accelerationComponents.set(i, data[i]);
             }
-        } else if (this.accelerationComponents.size() < data.length){
+        }
+        else {
             for (int i = 0; i < this.accelerationComponents.size(); i++) {
                 this.accelerationComponents.set(i, data[i]);
             }
-        }
-        else {
-            throw new Exception("Number of acceleration components < Number of data elements");
         }
     }
 

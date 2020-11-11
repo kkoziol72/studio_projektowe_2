@@ -26,14 +26,16 @@ public class Distance {
         this.distanceComponents = distanceComponents;
     }
 
-    public void updateDistance(Acceleration acceleration, Double time, Velocity velocity) throws Exception {
+    public void updateDistance(Acceleration acceleration, Double time, Velocity velocity) {
         if (acceleration.getAccelerationComponents().size() >= this.distanceComponents.size() && velocity.getVelocityComponents().size() >= this.distanceComponents.size()) {
             for (int i = 0; i < this.distanceComponents.size(); i++) {
                 this.distanceComponents.set(i, (velocity.getVelocityComponents().get(i) * time) + (0.5 * acceleration.getAccelerationComponents().get(i) * time * time));
             }
         }
         else {
-            throw new Exception("Number of acceleration components < Number of distance components OR Number of velocity components < Number of distance components");
+            for (int i = 0; i < acceleration.getAccelerationComponents().size(); i++) {
+                this.distanceComponents.set(i, (velocity.getVelocityComponents().get(i) * time) + (0.5 * acceleration.getAccelerationComponents().get(i) * time * time));
+            }
         }
     }
 

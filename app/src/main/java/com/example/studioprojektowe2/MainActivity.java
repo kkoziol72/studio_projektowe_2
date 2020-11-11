@@ -63,23 +63,16 @@ public class MainActivity extends AppCompatActivity {
                 sensorData[1] -= accelerometerCalibrationY;
                 sensorData[2] -= accelerometerCalibrationZ;
 
-                try {
-                    acceleration.readFromArray(sensorData);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                acceleration.readFromArray(sensorData);
+
 
                 for (int i = 0; i < acceleration.getAccelerationComponents().size(); i++) {
                     acceleration.getAccelerationComponents().set(i, sensorData[i]);
                 }
 
-                try {
-                    coordinates.setCoordinates(acceleration, READINGRATE / 1000000.0,
+                coordinates.setCoordinates(acceleration, READINGRATE / 1000000.0,
                             distance, velocity);
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
 
             } else if (calibrationMeter == CALIBRATIONTIME) {
                 calibrationMeter++;
