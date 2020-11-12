@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         @SuppressLint("SetTextI18n")
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
-            double[] vals = null;
+            double[] filteredData = null;
             double[] sensorData = convertFloatsToDoubles(sensorEvent.values);
 
             if (calibrationMeter > CALIBRATIONTIME) {
@@ -71,8 +71,8 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 List<Double> measurements = new ArrayList<Double>(acceleration.getAccelerationComponents());
-                vals = filter.estimateMeasurements(measurements);
-                acceleration.readFromArray(new double[]{vals[6], vals[7], vals[8]});
+                filteredData = filter.estimateMeasurements(measurements);
+                acceleration.readFromArray(new double[]{filteredData[6], filteredData[7], filteredData[8]});
                 coordinatesTitle.setText("Współrzędne: ");
                 accelerometerTitle.setText("Akcelerometr: ");
                 resetData();
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
             if (slower > SLOWERRATE) {
                 slower = 0;
                 if (calibrationMeter > CALIBRATIONTIME) {
-                    showCoordinates(new double[]{vals[6], vals[7], vals[8]});
+                    showCoordinates(new double[]{filteredData[6], filteredData[7], filteredData[8]});
                 } else {
                     showCoordinates(sensorData);
                 }
