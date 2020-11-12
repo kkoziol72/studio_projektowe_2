@@ -19,6 +19,9 @@ import com.example.studioprojektowe2.coordinates.Rotation;
 import com.example.studioprojektowe2.coordinates.Velocity;
 import com.example.studioprojektowe2.filter.AccelerationKalmanFilter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends AppCompatActivity {
@@ -53,31 +56,31 @@ public class MainActivity extends AppCompatActivity {
         @SuppressLint("SetTextI18n")
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
+            double[] filteredData = null;
             double[] sensorData = convertFloatsToDoubles(sensorEvent.values);
 
             if (calibrationMeter > CALIBRATIONTIME) {
-                double[] filteredValues = filter.estimateCoordinates(sensorEvent.values);
-                coordinatesTitle.setText("Współrzędne: ");
-                accelerometerTitle.setText("Akcelerometr: ");
+                sensorData[0] -= accelerometerCalibrationX;
+                sensorData[1] -= accelerometerCalibrationY;
+                sensorData[2] -= accelerometerCalibrationZ;
 
-                filteredValues[0] -= accelerometerCalibrationX;
-                filteredValues[1] -= accelerometerCalibrationY;
-                filteredValues[2] -= accelerometerCalibrationZ;
-
-                acceleration.readFromArray(filteredValues);
-
+                acceleration.readFromArray(sensorData);
 
                 for (int i = 0; i < acceleration.getAccelerationComponents().size(); i++) {
-                    acceleration.getAccelerationComponents().set(i, filteredValues[i]);
+                    acceleration.getAccelerationComponents().set(i, sensorData[i]);
                 }
 
-                coordinates.setCoordinates(acceleration, READINGRATE / 1000000.0d,
-                        distance, velocity);
+                List<Double> measurements = new ArrayList<Double>(acceleration.getAccelerationComponents());
+                filteredData = filter.estimateMeasurements(measurements);
+                acceleration.readFromArray(new double[]{filteredData[6], filteredData[7], filteredData[8]});
+                coordinatesTitle.setText("Współrzędne: ");
+                accelerometerTitle.setText("Akcelerometr: ");
+                resetData();
+                coordinates.setCoordinates(acceleration, READINGRATE / 1000000.0,
+                            distance, velocity);
 
 
             } else if (calibrationMeter == CALIBRATIONTIME) {
-                resetData();
-
                 calibrationMeter++;
                 accelerometerCalibrationX = accelerometerCalibrationX / CALIBRATIONTIME;
                 accelerometerCalibrationY = accelerometerCalibrationY / CALIBRATIONTIME;
@@ -93,7 +96,11 @@ public class MainActivity extends AppCompatActivity {
             slower++;
             if (slower > SLOWERRATE) {
                 slower = 0;
-                showCoordinates(sensorData);
+                if (calibrationMeter > CALIBRATIONTIME) {
+                    showCoordinates(new double[]{filteredData[6], filteredData[7], filteredData[8]});
+                } else {
+                    showCoordinates(sensorData);
+                }
             }
         }
 
