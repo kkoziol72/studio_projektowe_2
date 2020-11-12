@@ -79,15 +79,15 @@ public class AccelerationKalmanFilter {
         });
 
         Q = new Array2DRowRealMatrix(new double[][]{
-                { 1d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d },
-                { 0d, 1d, 0d, 0d, 0d, 0d, 0d, 0d, 0d },
-                { 0d, 0d, 1d, 0d, 0d, 0d, 0d, 0d, 0d },
-                { 0d, 0d, 0d, 1d, 0d, 0d, 0d, 0d, 0d },
-                { 0d, 0d, 0d, 0d, 1d, 0d, 0d, 0d, 0d },
-                { 0d, 0d, 0d, 0d, 0d, 1d, 0d, 0d, 0d },
-                { 0d, 0d, 0d, 0d, 0d, 0d, 1d, 0d, 0d },
-                { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 1d, 0d },
-                { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 1d },
+                { 0.1d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                { 0d, 0.1d, 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                { 0d, 0d, 0.1d, 0d, 0d, 0d, 0d, 0d, 0d },
+                { 0d, 0d, 0d, 0.1d, 0d, 0d, 0d, 0d, 0d },
+                { 0d, 0d, 0d, 0d, 0.1d, 0d, 0d, 0d, 0d },
+                { 0d, 0d, 0d, 0d, 0d, 0.1d, 0d, 0d, 0d },
+                { 0d, 0d, 0d, 0d, 0d, 0d, 0.1d, 0d, 0d },
+                { 0d, 0d, 0d, 0d, 0d, 0d, 0d,0.1d, 0d },
+                { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0.1d},
                  //     [ 0       0   T^3/2   0     0    T^2   ]
         });
 

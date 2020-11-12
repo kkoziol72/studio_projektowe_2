@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
                 List<Double> measurements = new ArrayList<Double>(acceleration.getAccelerationComponents());
                 filteredData = filter.estimateMeasurements(measurements);
+                System.out.println(Arrays.toString(filteredData));
                 acceleration.readFromArray(new double[]{filteredData[6], filteredData[7], filteredData[8]});
                 coordinatesTitle.setText("Współrzędne: ");
                 accelerometerTitle.setText("Akcelerometr: ");
@@ -97,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
             if (slower > SLOWERRATE) {
                 slower = 0;
                 if (calibrationMeter > CALIBRATIONTIME) {
-                    showCoordinates(new double[]{filteredData[6], filteredData[7], filteredData[8]});
+                    showCoordinates(new double[]{filteredData[6], filteredData[7], filteredData[8] + 19d});
                 } else {
                     showCoordinates(sensorData);
                 }
