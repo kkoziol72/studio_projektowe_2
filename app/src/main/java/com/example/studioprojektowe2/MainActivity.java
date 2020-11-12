@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
             double[] sensorData = convertFloatsToDoubles(sensorEvent.values);
 
             if (calibrationMeter > CALIBRATIONTIME) {
-                resetData();
                 sensorData[0] -= accelerometerCalibrationX;
                 sensorData[1] -= accelerometerCalibrationY;
                 sensorData[2] -= accelerometerCalibrationZ;
@@ -81,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             } else if (calibrationMeter == CALIBRATIONTIME) {
+                resetData();
                 calibrationMeter++;
                 accelerometerCalibrationX = accelerometerCalibrationX / CALIBRATIONTIME;
                 accelerometerCalibrationY = accelerometerCalibrationY / CALIBRATIONTIME;
