@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             } else if (calibrationMeter == CALIBRATIONTIME) {
+                resetData();
                 calibrationMeter++;
                 accelerometerCalibrationX = accelerometerCalibrationX / CALIBRATIONTIME;
                 accelerometerCalibrationY = accelerometerCalibrationY / CALIBRATIONTIME;
@@ -108,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
             if (slower > SLOWERRATE) {
                 slower = 0;
                 if (calibrationMeter > CALIBRATIONTIME) {
-                    showCoordinates(new double[]{filteredData[6], filteredData[7], filteredData[8]});
+                    showCoordinates(new double[]{filteredData[6], filteredData[7], filteredData[8] + 19d});
                 } else {
                     showCoordinates(sensorData);
                 }
