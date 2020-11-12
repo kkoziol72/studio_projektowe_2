@@ -13,6 +13,7 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 
 import java.lang.reflect.Array;
+import java.util.List;
 
 public class AccelerationKalmanFilter {
 
@@ -41,37 +42,53 @@ public class AccelerationKalmanFilter {
     private KalmanFilter filter;
 
     public AccelerationKalmanFilter() {
-        A = new Array2DRowRealMatrix(new double[][]{
-                { 1d, 0d, 0d, dt, 0d, 0d },    // A = [ 1 0 0 t 0 0 ]
-                { 0d, 1d, 0d, 0d, dt, 0d },    //     [ 0 1 0 0 t 0 ]
-                { 0d, 0d, 1d, 0d, 0d, dt },    //     [ 0 0 1 0 0 t ]
-                { 0d, 0d, 0d, 1d, 0d, 0d },    //     [ 0 0 0 1 0 0 ]
-                { 0d, 0d, 0d, 0d, 1d, 0d },    //     [ 0 0 0 0 1 0 ]
-                { 0d, 0d, 0d, 0d, 0d, 1d }     //     [ 0 0 0 0 0 1 ]
+//        A = new Array2DRowRealMatrix(new double[][]{
+//                { 1d, 0d, 0d, dt, 0d, 0d },    // A = [ 1 0 0 t 0 0 ]
+//                { 0d, 1d, 0d, 0d, dt, 0d },    //     [ 0 1 0 0 t 0 ]
+//                { 0d, 0d, 1d, 0d, 0d, dt },    //     [ 0 0 1 0 0 t ]
+//                { 0d, 0d, 0d, 1d, 0d, 0d },    //     [ 0 0 0 1 0 0 ]
+//                { 0d, 0d, 0d, 0d, 1d, 0d },    //     [ 0 0 0 0 1 0 ]
+//                { 0d, 0d, 0d, 0d, 0d, 1d }     //     [ 0 0 0 0 0 1 ]
+//        });
+
+        A = new Array2DRowRealMatrix(new double[][] {
+                {1d, 0d, 0d, dt, 0d, 0d, Math.pow(dt, 2d) / 2d, 0d, 0d},
+                {0d, 1d, 0d, 0d, dt, 0d, 0d, Math.pow(dt, 2d) / 2d, 0d},
+                {0d, 0d, 1d, 0d, 0d, dt, 0d, 0d, Math.pow(dt, 2d) / 2d},
+                {0d, 0d, 0d, 1d, 0d, 0d, dt, 0d, 0d},
+                {0d, 0d, 0d, 0d, 1d, 0d, 0d, dt, 0d},
+                {0d, 0d, 0d, 0d, 0d, 1d, 0d, 0d, dt},
+                {0d, 0d, 0d, 0d, 0d, 0d, 1d, 0d, 0d},
+                {0d, 0d, 0d, 0d, 0d, 0d, 0d, 1d, 0d},
+                {0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 1d}
         });
 
-        B = new Array2DRowRealMatrix(new double[][]{
-                { Math.pow(dt, 2d)/2d },       // B = [ t^2/2 ]
-                { Math.pow(dt, 2d)/2d },       //     [ t^2/2 ]
-                { Math.pow(dt, 2d)/2d },       //     [ t^2/2 ]
-                { dt },                        //     [   t   ]
-                { dt },                        //     [   t   ]
-                { dt }                         //     [   t   ]
-        });
+//        B = new Array2DRowRealMatrix(new double[][]{
+//                { Math.pow(dt, 2d)/2d },       // B = [ t^2/2 ]
+//                { Math.pow(dt, 2d)/2d },       //     [ t^2/2 ]
+//                { Math.pow(dt, 2d)/2d },       //     [ t^2/2 ]
+//                { dt },                        //     [   t   ]
+//                { dt },                        //     [   t   ]
+//                { dt }                         //     [   t   ]
+//        });
 
         H = new Array2DRowRealMatrix(new double[][]{
-                { 1d, 0d, 0d, 0d, 0d, 0d },   // H = [ 1 0 0 0 0 0 ]
-                { 0d, 1d, 0d, 0d, 0d, 0d },   //     [ 0 1 0 0 0 0 ]
-                { 0d, 0d, 1d, 0d, 0d, 0d }    //     [ 0 0 1 0 0 0 ]
+                { 0d, 0d, 0d, 0d, 0d, 0d, 1d, 0d, 0d },   // H = [ 1 0 0 0 0 0 ]
+                { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 1d, 0d },   //     [ 0 1 0 0 0 0 ]
+                { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 1d }    //     [ 0 0 1 0 0 0 ]
         });
 
         Q = new Array2DRowRealMatrix(new double[][]{
-                { Math.pow(dt, 4) / 4d, 0d, 0d, Math.pow(dt, 3d) / 2d, 0d, 0d },   // Q = [ T^4/4   0     0   T^3/2   0     0    ]
-                { 0d, Math.pow(dt, 4) / 4d, 0d, 0d, Math.pow(dt, 3d) / 2d, 0d },   //     [   0   T^4/4   0     0   T^3/2   0    ]
-                { 0d, 0d, Math.pow(dt, 4) / 4d, 0d, 0d, Math.pow(dt, 3d) / 2d },   //     [   0     0   T^4/4   0     0    T^3/2 ]
-                { Math.pow(dt, 3d) / 2d, 0d, 0d, Math.pow(dt, 2d), 0d, 0d },       //     [ T^3/2   0     0    T^2    0     0    ]
-                { 0d, Math.pow(dt, 3d) / 2d, 0d, 0d, Math.pow(dt, 2d), 0d },       //     [ 0     T^3/2   0     0    T^2    0    ]
-                { 0d, 0d, Math.pow(dt, 3d) / 2d, 0d, 0d, Math.pow(dt, 2d) }        //     [ 0       0   T^3/2   0     0    T^2   ]
+                { 1d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                { 0d, 1d, 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                { 0d, 0d, 1d, 0d, 0d, 0d, 0d, 0d, 0d },
+                { 0d, 0d, 0d, 1d, 0d, 0d, 0d, 0d, 0d },
+                { 0d, 0d, 0d, 0d, 1d, 0d, 0d, 0d, 0d },
+                { 0d, 0d, 0d, 0d, 0d, 1d, 0d, 0d, 0d },
+                { 0d, 0d, 0d, 0d, 0d, 0d, 1d, 0d, 0d },
+                { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 1d, 0d },
+                { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 1d },
+                 //     [ 0       0   T^3/2   0     0    T^2   ]
         });
 
         R = new Array2DRowRealMatrix(new double[][] {
@@ -88,17 +105,19 @@ public class AccelerationKalmanFilter {
 //                { 1d, 1d, 1d, 1d, 1d, 1d },
 //                { 1d, 1d, 1d, 1d, 1d, 1d }
 //        });
-        x = new ArrayRealVector(new double[] { 1d, 1d, 1d, 1d, 1d, 1d });
+        x = new ArrayRealVector(new double[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d });
 
-        ProcessModel processModel = new DefaultProcessModel(A, B, Q, x, null);
+        ProcessModel processModel = new DefaultProcessModel(A, null, Q, x, null);
         MeasurementModel measurementModel = new DefaultMeasurementModel(H, R);
         filter = new KalmanFilter(processModel, measurementModel);
     }
 
 
-    public double[] estimateCoordinates(float[] coordinates) {
-        filter.predict(u);
-        RealVector z = new ArrayRealVector(new double[]{coordinates[0], coordinates[1], coordinates[2]});
+    public double[] estimateMeasurements(List<Double> measurements) {
+        filter.predict();
+        Double[] array = new Double[measurements.size()];
+        measurements.toArray(array);
+        RealVector z = new ArrayRealVector(measurements.toArray(array));
         filter.correct(z);
         return filter.getStateEstimation();
     }
