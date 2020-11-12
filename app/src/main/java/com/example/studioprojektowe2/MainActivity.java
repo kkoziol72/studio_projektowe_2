@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
             double[] sensorData = convertFloatsToDoubles(sensorEvent.values);
 
             if (calibrationMeter > CALIBRATIONTIME) {
+                resetData();
                 sensorData[0] -= accelerometerCalibrationX;
                 sensorData[1] -= accelerometerCalibrationY;
                 sensorData[2] -= accelerometerCalibrationZ;
@@ -69,14 +70,12 @@ public class MainActivity extends AppCompatActivity {
                 for (int i = 0; i < acceleration.getAccelerationComponents().size(); i++) {
                     acceleration.getAccelerationComponents().set(i, sensorData[i]);
                 }
-
                 List<Double> measurements = new ArrayList<Double>(acceleration.getAccelerationComponents());
                 filteredData = filter.estimateMeasurements(measurements);
                 System.out.println(Arrays.toString(filteredData));
-                acceleration.readFromArray(new double[]{filteredData[6], filteredData[7], filteredData[8]});
+                acceleration.readFromArray(new double[]{filteredData[6], filteredData[7], filteredData[8] + 19.2d});
                 coordinatesTitle.setText("Współrzędne: ");
                 accelerometerTitle.setText("Akcelerometr: ");
-                resetData();
                 coordinates.setCoordinates(acceleration, READINGRATE / 1000000.0,
                             distance, velocity);
 
