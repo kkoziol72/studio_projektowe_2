@@ -66,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
 
                 acceleration.readFromArray(sensorData);
 
-                System.out.println("Skalibrowany:");
                 for (int i = 0; i < acceleration.getAccelerationComponents().size(); i++) {
                     System.out.println(String.format("%.4f", acceleration.getAccelerationComponents().get(i)));
                 }
@@ -91,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
 
 
             } else if (calibrationMeter == CALIBRATIONTIME) {
-                resetData();
                 calibrationMeter++;
                 accelerometerCalibrationX = accelerometerCalibrationX / CALIBRATIONTIME;
                 accelerometerCalibrationY = accelerometerCalibrationY / CALIBRATIONTIME;
@@ -109,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
             if (slower > SLOWERRATE) {
                 slower = 0;
                 if (calibrationMeter > CALIBRATIONTIME) {
-                    showCoordinates(new double[]{filteredData[6], filteredData[7], filteredData[8] + 19d});
+                    showCoordinates(new double[]{filteredData[6], filteredData[7], filteredData[8]});
                 } else {
                     showCoordinates(sensorData);
                 }
@@ -217,9 +215,6 @@ public class MainActivity extends AppCompatActivity {
         accelerometerXValue.setText("x: " + String.format("%.4f", sensorData[0]));
         accelerometerYValue.setText("y: " + String.format("%.4f", sensorData[1]));
         accelerometerZValue.setText("z: " + String.format("%.4f", sensorData[2]));
-//        accelerometerXValue.setText("x: " + (sensorData[0] - accelerometerCalibrationX));
-//        accelerometerYValue.setText("y: " + (sensorData[1] - accelerometerCalibrationY));
-//        accelerometerZValue.setText("z: " + (sensorData[2] - accelerometerCalibrationZ));
 
         coordinatesXValue.setText("x: " + String.format("%.4f", coordinates.getCoordinatesComponents().get(0)));
         coordinatesYValue.setText("y: " + String.format("%.4f", coordinates.getCoordinatesComponents().get(1)));
