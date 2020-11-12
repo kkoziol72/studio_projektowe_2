@@ -28,13 +28,13 @@ public class Coordinates {
 
     public void updateCoordinates(Distance distance) {
         if (distance.getDistanceComponents().size() >= this.coordinatesComponents.size()) {
-            for (int i = 0; i < this.getCoordinatesComponents().size(); i++) {
-                this.getCoordinatesComponents().set(i, this.coordinatesComponents.get(i) + distance.getDistanceComponents().get(i));
+            for (int i = 0; i < this.coordinatesComponents.size(); i++) {
+                this.coordinatesComponents.set(i, this.coordinatesComponents.get(i) + distance.getDistanceComponents().get(i));
             }
         }
         else {
             for (int i = 0; i < distance.getDistanceComponents().size(); i++) {
-                this.getCoordinatesComponents().set(i, this.coordinatesComponents.get(i) + distance.getDistanceComponents().get(i));
+                this.coordinatesComponents.set(i, this.coordinatesComponents.get(i) + distance.getDistanceComponents().get(i));
             }
         }
     }

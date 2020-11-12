@@ -66,16 +66,26 @@ public class MainActivity extends AppCompatActivity {
 
                 acceleration.readFromArray(sensorData);
 
+                System.out.println("Skalibrowany:");
                 for (int i = 0; i < acceleration.getAccelerationComponents().size(); i++) {
-                    acceleration.getAccelerationComponents().set(i, sensorData[i]);
+                    System.out.println(String.format("%.4f", acceleration.getAccelerationComponents().get(i)));
                 }
 
-                List<Double> measurements = new ArrayList<Double>(acceleration.getAccelerationComponents());
+                List<Double> measurements = new ArrayList<Double>();
+                measurements.add(sensorData[0]);
+                measurements.add(sensorData[1]);
+                measurements.add(sensorData[2]);
                 filteredData = filter.estimateMeasurements(measurements);
                 acceleration.readFromArray(new double[]{filteredData[6], filteredData[7], filteredData[8]});
+
+                System.out.println("Dodatkowo przefiltrowany:");
+                for (int i = 0; i < acceleration.getAccelerationComponents().size(); i++) {
+                    System.out.println(String.format("%.4f", acceleration.getAccelerationComponents().get(i)));
+                }
+
                 coordinatesTitle.setText("Współrzędne: ");
                 accelerometerTitle.setText("Akcelerometr: ");
-                resetData();
+//                resetData();
                 coordinates.setCoordinates(acceleration, READINGRATE / 1000000.0,
                             distance, velocity);
 
@@ -85,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 accelerometerCalibrationX = accelerometerCalibrationX / CALIBRATIONTIME;
                 accelerometerCalibrationY = accelerometerCalibrationY / CALIBRATIONTIME;
                 accelerometerCalibrationZ = accelerometerCalibrationZ / CALIBRATIONTIME;
+                resetData();
             } else {
                 coordinatesTitle.setText("Współrzędne: TRWA KALIBRACJA");
                 accelerometerTitle.setText("Akcelerometr: TRWA KALIBRACJA");
@@ -202,13 +213,16 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("SetTextI18n")
     private void showCoordinates(double[] sensorData) {
-        accelerometerXValue.setText("x: " + (sensorData[0] - accelerometerCalibrationX));
-        accelerometerYValue.setText("y: " + (sensorData[1] - accelerometerCalibrationY));
-        accelerometerZValue.setText("z: " + (sensorData[2] - accelerometerCalibrationZ));
+        accelerometerXValue.setText("x: " + String.format("%.4f", sensorData[0]));
+        accelerometerYValue.setText("y: " + String.format("%.4f", sensorData[1]));
+        accelerometerZValue.setText("z: " + String.format("%.4f", sensorData[2]));
+//        accelerometerXValue.setText("x: " + (sensorData[0] - accelerometerCalibrationX));
+//        accelerometerYValue.setText("y: " + (sensorData[1] - accelerometerCalibrationY));
+//        accelerometerZValue.setText("z: " + (sensorData[2] - accelerometerCalibrationZ));
 
-        coordinatesXValue.setText("x: " + coordinates.getCoordinatesComponents().get(0));
-        coordinatesYValue.setText("y: " + coordinates.getCoordinatesComponents().get(1));
-        coordinatesZValue.setText("z: " + coordinates.getCoordinatesComponents().get(2));
+        coordinatesXValue.setText("x: " + String.format("%.4f", coordinates.getCoordinatesComponents().get(0)));
+        coordinatesYValue.setText("y: " + String.format("%.4f", coordinates.getCoordinatesComponents().get(1)));
+        coordinatesZValue.setText("z: " + String.format("%.4f", coordinates.getCoordinatesComponents().get(2)));
     }
 
     public static double[] convertFloatsToDoubles(float[] input) {

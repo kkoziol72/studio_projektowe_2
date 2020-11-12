@@ -27,14 +27,14 @@ public class Velocity {
     }
 
     public void updateVelocity(Acceleration acceleration, Double time) {
-        if (acceleration.getAccelerationComponents().size() >= this.getVelocityComponents().size()) {
+        if (acceleration.getAccelerationComponents().size() >= this.velocityComponents.size()) {
             for (int i = 0; i < this.velocityComponents.size(); i++) {
-                this.velocityComponents.set(i, this.getVelocityComponents().get(i) + (acceleration.getAccelerationComponents().get(i) * time));
+                this.velocityComponents.set(i, this.velocityComponents.get(i) + (acceleration.getAccelerationComponents().get(i) * time));
             }
         }
         else {
             for (int i = 0; i < acceleration.getAccelerationComponents().size(); i++) {
-                this.velocityComponents.set(i, this.getVelocityComponents().get(i) + (acceleration.getAccelerationComponents().get(i) * time));
+                this.velocityComponents.set(i, this.velocityComponents.get(i) + (acceleration.getAccelerationComponents().get(i) * time));
             }
         }
     }
