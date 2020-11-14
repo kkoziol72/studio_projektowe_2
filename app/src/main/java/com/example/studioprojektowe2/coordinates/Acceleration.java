@@ -10,7 +10,7 @@ public class Acceleration {
     public Acceleration() {
         this.accelerationComponents = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
-            this.accelerationComponents.add(0.0);
+            this.accelerationComponents.add(0.0d);
         }
     }
 
@@ -28,7 +28,7 @@ public class Acceleration {
 
     public void setAccelerationTo0() {
         for (int i = 0; i < this.accelerationComponents.size(); i++) {
-            this.accelerationComponents.set(i, 0.0);
+            this.accelerationComponents.set(i, 0.0d);
         }
     }
 

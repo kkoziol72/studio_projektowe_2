@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private final AccelerationKalmanFilter filter = new AccelerationKalmanFilter();
 
     private final SensorEventListener accelerometerListener = new SensorEventListener() {
-        @SuppressLint("SetTextI18n")
+        @SuppressLint({"SetTextI18n", "DefaultLocale"})
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
             double[] filteredData = null;
@@ -126,10 +126,10 @@ public class MainActivity extends AppCompatActivity {
             //double[] sensorData = filter.estimateCoordinates(sensorEvent.values);
             double[] sensorData = convertFloatsToDoubles(sensorEvent.values);
             gyroscopeLastData = lowPass(sensorData, gyroscopeLastData);
-            rotation.updateAngles(sensorData[0], sensorData[1], sensorData[2], sensorEvent.timestamp);
-            gyroscopeXValue.setText("x: " + rotation.getRotationComponents().get(0) * 180 / Math.PI + " stopni");
-            gyroscopeYValue.setText("y: " + rotation.getRotationComponents().get(1) * 180 / Math.PI + " stopni");
-            gyroscopeZValue.setText("z: " + rotation.getRotationComponents().get(2) * 180 / Math.PI + " stopni");
+            rotation.updateWithSensorData(sensorData);
+            gyroscopeXValue.setText("x: " + rotation.getRotationComponents().get(0) * 180d / Math.PI + " stopni");
+            gyroscopeYValue.setText("y: " + rotation.getRotationComponents().get(1) * 180d / Math.PI + " stopni");
+            gyroscopeZValue.setText("z: " + rotation.getRotationComponents().get(2) * 180d / Math.PI + " stopni");
             gyroscopeXValue.setText("x: " + gyroscopeLastData[0]);
             gyroscopeYValue.setText("y: " + gyroscopeLastData[1]);
             gyroscopeZValue.setText("z: " + gyroscopeLastData[2]);
@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n", "DefaultLocale"})
     private void showCoordinates(double[] sensorData) {
         accelerometerXValue.setText("x: " + String.format("%.4f", sensorData[0]));
         accelerometerYValue.setText("y: " + String.format("%.4f", sensorData[1]));

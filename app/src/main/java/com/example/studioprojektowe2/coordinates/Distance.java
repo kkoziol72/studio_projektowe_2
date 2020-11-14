@@ -10,7 +10,7 @@ public class Distance {
     public Distance() {
         this.distanceComponents = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
-            this.distanceComponents.add(0.0);
+            this.distanceComponents.add(0.0d);
         }
     }
 
@@ -29,19 +29,19 @@ public class Distance {
     public void updateDistance(Acceleration acceleration, Double time, Velocity velocity) {
         if (acceleration.getAccelerationComponents().size() >= this.distanceComponents.size() && velocity.getVelocityComponents().size() >= this.distanceComponents.size()) {
             for (int i = 0; i < this.distanceComponents.size(); i++) {
-                this.distanceComponents.set(i, (velocity.getVelocityComponents().get(i) * time) + (0.5 * acceleration.getAccelerationComponents().get(i) * time * time));
+                this.distanceComponents.set(i, (velocity.getVelocityComponents().get(i) * time) + (0.5d * acceleration.getAccelerationComponents().get(i) * time * time));
             }
         }
         else {
             for (int i = 0; i < acceleration.getAccelerationComponents().size(); i++) {
-                this.distanceComponents.set(i, (velocity.getVelocityComponents().get(i) * time) + (0.5 * acceleration.getAccelerationComponents().get(i) * time * time));
+                this.distanceComponents.set(i, (velocity.getVelocityComponents().get(i) * time) + (0.5d * acceleration.getAccelerationComponents().get(i) * time * time));
             }
         }
     }
 
     public void setDistanceTo0() {
         for (int i = 0; i < this.distanceComponents.size(); i++) {
-            this.distanceComponents.set(i, 0.0);
+            this.distanceComponents.set(i, 0.0d);
         }
     }
 

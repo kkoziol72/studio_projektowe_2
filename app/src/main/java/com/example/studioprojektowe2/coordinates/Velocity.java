@@ -10,7 +10,7 @@ public class Velocity {
     public Velocity() {
         this.velocityComponents = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
-            this.velocityComponents.add(0.0);
+            this.velocityComponents.add(0.0d);
         }
     }
 
@@ -41,7 +41,7 @@ public class Velocity {
 
     public void setVelocityTo0() {
         for (int i = 0; i < this.velocityComponents.size(); i++) {
-            this.velocityComponents.set(i, 0.0);
+            this.velocityComponents.set(i, 0.0d);
         }
     }
 
