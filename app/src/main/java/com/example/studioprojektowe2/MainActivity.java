@@ -127,6 +127,9 @@ public class MainActivity extends AppCompatActivity {
             double[] sensorData = convertFloatsToDoubles(sensorEvent.values);
             gyroscopeLastData = lowPass(sensorData, gyroscopeLastData);
             rotation.updateWithSensorData(sensorData);
+
+            coordinates.countCoordinatesOnRotation(rotation);
+
             gyroscopeXValue.setText("x: " + rotation.getRotationComponents().get(0) * 180d / Math.PI + " stopni");
             gyroscopeYValue.setText("y: " + rotation.getRotationComponents().get(1) * 180d / Math.PI + " stopni");
             gyroscopeZValue.setText("z: " + rotation.getRotationComponents().get(2) * 180d / Math.PI + " stopni");
