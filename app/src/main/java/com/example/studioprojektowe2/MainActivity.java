@@ -261,12 +261,11 @@ public class MainActivity extends AppCompatActivity {
         coordinatesZValue.setText("z: " + String.format("%.4f", coordinates.getCoordinatesComponents().get(2)));
     }
 
-    @SuppressLint("DefaultLocale")
+    @SuppressLint({"DefaultLocale", "SetTextI18n"})
     private void showRotationData(double [] gyroscopeData) {
-        List<Double> degrees = rotation.getDegreesFromRadians();
-        gyroscopeXValue.setText("x: " + String.format("%.4f stopni", gyroscopeData[0]));
-        gyroscopeYValue.setText("y: " + String.format("%.4f stopni", gyroscopeData[1]));
-        gyroscopeZValue.setText("z: " + String.format("%.4f stopni", gyroscopeData[2]));
+        gyroscopeXValue.setText("x: " + String.format("%.4f stopni", gyroscopeData[0] * 180d / Math.PI));
+        gyroscopeYValue.setText("y: " + String.format("%.4f stopni", gyroscopeData[1] * 180d / Math.PI));
+        gyroscopeZValue.setText("z: " + String.format("%.4f stopni", gyroscopeData[2] * 180d / Math.PI));
     }
 
     public static double[] convertFloatsToDoubles(float[] input) {
