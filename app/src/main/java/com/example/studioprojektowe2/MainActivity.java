@@ -261,6 +261,7 @@ public class MainActivity extends AppCompatActivity {
         coordinatesZValue.setText("z: " + String.format("%.4f", coordinates.getCoordinatesComponents().get(2)));
     }
 
+    @SuppressLint("DefaultLocale")
     private void showRotationData(double [] gyroscopeData) {
         List<Double> degrees = rotation.getDegreesFromRadians();
         gyroscopeXValue.setText("x: " + String.format("%.4f stopni", gyroscopeData[0]));
