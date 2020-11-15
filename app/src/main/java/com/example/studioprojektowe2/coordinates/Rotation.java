@@ -33,16 +33,14 @@ public class Rotation {
         this.rotationComponents = rotationComponents;
     }
 
-    public void getDegreesFromRadians() {
-        for (int i = 0; i < this.rotationComponents.size(); i++) {
-            this.rotationComponents.set(i, this.rotationComponents.get(i) * 180.0d / Math.PI);
-        }
-    }
+    public List<Double> getDegreesFromRadians() {
+        List <Double> componentsDegress = new ArrayList<>();
 
-    public void getRadiansFromDegrees() {
         for (int i = 0; i < this.rotationComponents.size(); i++) {
-            this.rotationComponents.set(i, this.rotationComponents.get(i) * Math.PI / 180.0d);
+            componentsDegress.add(this.rotationComponents.get(i) * 180.0d / Math.PI);
         }
+
+        return componentsDegress;
     }
 
     public void updateWithSensorData(double [] sensorData) {

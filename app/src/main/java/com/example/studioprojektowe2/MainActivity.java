@@ -20,7 +20,6 @@ import com.example.studioprojektowe2.coordinates.Velocity;
 import com.example.studioprojektowe2.filter.AccelerationKalmanFilter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -31,9 +30,13 @@ public class MainActivity extends AppCompatActivity {
             coordinatesTitle, coordinatesXValue, coordinatesYValue, coordinatesZValue;
 
     public final static int READINGRATE = 2000;
+
     final int CALIBRATIONTIME = 2000;
     final int SLOWERRATE = 50;
     private final double ALPHA = 0.18;
+
+    final int CALIBRATIONTIME_G = 2000;
+    final int SLOWERRATE_G  = 50;
 
     final AtomicBoolean pressed = new AtomicBoolean(false);
     private double[] gyroscopeLastData;
@@ -45,10 +48,15 @@ public class MainActivity extends AppCompatActivity {
     Rotation rotation = new Rotation();
 
     private int calibrationMeter = 0;
+    private int calibrationMeter_G = 0;
     private double accelerometerCalibrationX = 0.0;
     private double accelerometerCalibrationY = 0.0;
     private double accelerometerCalibrationZ = 0.0;
+    private double gyroscopeCalibrationX = 0.0;
+    private double gyroscopeCalibrationY = 0.0;
+    private double gyroscopeCalibrationZ = 0.0;
     private int slower = 0;
+    private int slower_G = 0;
 
     private final AccelerationKalmanFilter filter = new AccelerationKalmanFilter();
 
@@ -84,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
 
                 coordinatesTitle.setText("Współrzędne: ");
                 accelerometerTitle.setText("Akcelerometr: ");
-//                resetData();
                 coordinates.setCoordinates(acceleration, READINGRATE / 1000000.0,
                             distance, velocity);
 
@@ -120,22 +127,45 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private final SensorEventListener gyroscopeListener = new SensorEventListener() {
-        @SuppressLint("SetTextI18n")
+        @SuppressLint({"SetTextI18n", "DefaultLocale"})
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
-            //double[] sensorData = filter.estimateCoordinates(sensorEvent.values);
             double[] sensorData = convertFloatsToDoubles(sensorEvent.values);
-            gyroscopeLastData = lowPass(sensorData, gyroscopeLastData);
-            rotation.updateWithSensorData(sensorData);
 
-            coordinates.countCoordinatesOnRotation(rotation);
+            if (calibrationMeter_G > CALIBRATIONTIME_G) {
+                sensorData[0] -= gyroscopeCalibrationX;
+                sensorData[1] -= gyroscopeCalibrationY;
+                sensorData[2] -= gyroscopeCalibrationZ;
 
-            gyroscopeXValue.setText("x: " + rotation.getRotationComponents().get(0) * 180d / Math.PI + " stopni");
-            gyroscopeYValue.setText("y: " + rotation.getRotationComponents().get(1) * 180d / Math.PI + " stopni");
-            gyroscopeZValue.setText("z: " + rotation.getRotationComponents().get(2) * 180d / Math.PI + " stopni");
-            gyroscopeXValue.setText("x: " + gyroscopeLastData[0]);
-            gyroscopeYValue.setText("y: " + gyroscopeLastData[1]);
-            gyroscopeZValue.setText("z: " + gyroscopeLastData[2]);
+                rotation.updateWithSensorData(sensorData);
+
+                for (int i = 0; i < rotation.getRotationComponents().size(); i++) {
+                    System.out.println(String.format("%.4f", rotation.getRotationComponents().get(i)));
+                }
+
+                gyroscopeTitle.setText("Żyroskop: ");
+
+                coordinates.countCoordinatesOnRotation(rotation);
+
+            } else if (calibrationMeter_G == CALIBRATIONTIME_G) {
+                calibrationMeter_G++;
+                gyroscopeCalibrationX = gyroscopeCalibrationX / CALIBRATIONTIME_G;
+                gyroscopeCalibrationY = gyroscopeCalibrationY / CALIBRATIONTIME_G;
+                gyroscopeCalibrationZ = gyroscopeCalibrationZ / CALIBRATIONTIME_G;
+                resetData();
+            } else {
+                gyroscopeTitle.setText("Żyroskop: TRWA KALIBRACJA");
+                calibrationMeter_G++;
+                gyroscopeCalibrationX += sensorData[0];
+                gyroscopeCalibrationY += sensorData[1];
+                gyroscopeCalibrationZ += sensorData[2];
+            }
+            slower_G++;
+            if (slower_G > SLOWERRATE_G) {
+                slower_G = 0;
+                showRotationData(sensorData);
+            }
+
         }
 
         @Override
@@ -177,8 +207,10 @@ public class MainActivity extends AppCompatActivity {
         Button setPositionButton = findViewById(R.id.setPositionButton);
         setPositionButton.setOnClickListener(v -> {
             calibrationMeter = 0;
+            calibrationMeter_G = 0;
             resetData();
             resetAccelerometerCalibration();
+            resetGyroscopeCalibration();
         });
     }
 
@@ -212,6 +244,11 @@ public class MainActivity extends AppCompatActivity {
         accelerometerCalibrationZ = 0;
     }
 
+    private void resetGyroscopeCalibration() {
+        gyroscopeCalibrationX = 0;
+        gyroscopeCalibrationY = 0;
+        gyroscopeCalibrationZ = 0;
+    }
 
     @SuppressLint({"SetTextI18n", "DefaultLocale"})
     private void showCoordinates(double[] sensorData) {
@@ -222,6 +259,13 @@ public class MainActivity extends AppCompatActivity {
         coordinatesXValue.setText("x: " + String.format("%.4f", coordinates.getCoordinatesComponents().get(0)));
         coordinatesYValue.setText("y: " + String.format("%.4f", coordinates.getCoordinatesComponents().get(1)));
         coordinatesZValue.setText("z: " + String.format("%.4f", coordinates.getCoordinatesComponents().get(2)));
+    }
+
+    private void showRotationData(double [] gyroscopeData) {
+        List<Double> degrees = rotation.getDegreesFromRadians();
+        gyroscopeXValue.setText("x: " + String.format("%.4f stopni", gyroscopeData[0]));
+        gyroscopeYValue.setText("y: " + String.format("%.4f stopni", gyroscopeData[1]));
+        gyroscopeZValue.setText("z: " + String.format("%.4f stopni", gyroscopeData[2]));
     }
 
     public static double[] convertFloatsToDoubles(float[] input) {
