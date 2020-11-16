@@ -263,9 +263,9 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint({"DefaultLocale", "SetTextI18n"})
     private void showRotationData(double [] gyroscopeData) {
-        gyroscopeXValue.setText("x: " + String.format("%.4f stopni", gyroscopeData[0] * 180d / Math.PI));
-        gyroscopeYValue.setText("y: " + String.format("%.4f stopni", gyroscopeData[1] * 180d / Math.PI));
-        gyroscopeZValue.setText("z: " + String.format("%.4f stopni", gyroscopeData[2] * 180d / Math.PI));
+        gyroscopeXValue.setText("x: " + String.format("%.4f stopni", Math.toDegrees(gyroscopeData[0])));
+        gyroscopeYValue.setText("y: " + String.format("%.4f stopni", Math.toDegrees(gyroscopeData[1])));
+        gyroscopeZValue.setText("z: " + String.format("%.4f stopni", Math.toDegrees(gyroscopeData[2])));
     }
 
     public static double[] convertFloatsToDoubles(float[] input) {
