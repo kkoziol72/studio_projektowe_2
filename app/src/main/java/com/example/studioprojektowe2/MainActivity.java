@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private int slower = 0;
     private int slower_G = 0;
 
-    private final AccelerationKalmanFilter filter = new AccelerationKalmanFilter();
+    //private final AccelerationKalmanFilter filter = new AccelerationKalmanFilter();
 
     private final SensorEventListener accelerometerListener = new SensorEventListener() {
         @SuppressLint({"SetTextI18n", "DefaultLocale"})
@@ -78,12 +78,12 @@ public class MainActivity extends AppCompatActivity {
                     System.out.println(String.format("%.4f", acceleration.getAccelerationComponents().get(i)));
                 }
 
-                List<Double> measurements = new ArrayList<Double>();
-                measurements.add(sensorData[0]);
-                measurements.add(sensorData[1]);
-                measurements.add(sensorData[2]);
-                filteredData = filter.estimateMeasurements(measurements);
-                acceleration.readFromArray(new double[]{filteredData[6], filteredData[7], filteredData[8]});
+                //List<Double> measurements = new ArrayList<Double>();
+                //measurements.add(sensorData[0]);
+                //measurements.add(sensorData[1]);
+                //measurements.add(sensorData[2]);
+                //filteredData = filter.estimateMeasurements(measurements);
+                acceleration.readFromArray(sensorData);
 
                 System.out.println("Dodatkowo przefiltrowany:");
                 for (int i = 0; i < acceleration.getAccelerationComponents().size(); i++) {
@@ -113,11 +113,11 @@ public class MainActivity extends AppCompatActivity {
             slower++;
             if (slower > SLOWERRATE) {
                 slower = 0;
-                if (calibrationMeter > CALIBRATIONTIME) {
-                    showCoordinates(new double[]{filteredData[6], filteredData[7], filteredData[8]});
-                } else {
+               // if (calibrationMeter > CALIBRATIONTIME) {
+                 //   showCoordinates(new double[]{filteredData[6], filteredData[7], filteredData[8]});
+                //} else {
                     showCoordinates(sensorData);
-                }
+                //}
             }
         }
 

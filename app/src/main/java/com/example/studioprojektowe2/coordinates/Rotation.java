@@ -46,12 +46,12 @@ public class Rotation {
     public void updateWithSensorData(double [] sensorData) {
         if (sensorData.length <= this.rotationComponents.size()) {
             for (int i = 0; i < sensorData.length; i++) {
-                this.rotationComponents.set(i, sensorData[i]);
+                this.rotationComponents.set(i, this.rotationComponents.get(i) + sensorData[i]);
             }
         }
         else {
             for (int i = 0; i < this.rotationComponents.size(); i++) {
-                this.rotationComponents.set(i, sensorData[i]);
+                this.rotationComponents.set(i, this.rotationComponents.get(i) + sensorData[i]);
             }
         }
     }
