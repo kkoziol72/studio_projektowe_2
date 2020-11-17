@@ -60,9 +60,11 @@ public class Rotation {
 
         double omegaMagnitude = Math.sqrt(axisX*axisX + axisY*axisY + axisZ*axisZ);
 
-        axisX /= omegaMagnitude;
-        axisY /= omegaMagnitude;
-        axisZ /= omegaMagnitude;
+        if(omegaMagnitude != 0){
+            axisX /= omegaMagnitude;
+            axisY /= omegaMagnitude;
+            axisZ /= omegaMagnitude;
+        }
 
         double thetaOverTwo = omegaMagnitude * t / 2.0f;
         double sinThetaOverTwo = Math.sin(thetaOverTwo);

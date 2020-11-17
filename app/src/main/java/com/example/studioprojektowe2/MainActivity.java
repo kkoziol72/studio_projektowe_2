@@ -9,6 +9,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -58,13 +59,13 @@ public class MainActivity extends AppCompatActivity {
     private int slower = 0;
     private int slower_G = 0;
 
-    //private final AccelerationKalmanFilter filter = new AccelerationKalmanFilter();
+    private final AccelerationKalmanFilter filter = new AccelerationKalmanFilter();
 
     private final SensorEventListener accelerometerListener = new SensorEventListener() {
         @SuppressLint({"SetTextI18n", "DefaultLocale"})
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
-            double[] filteredData = null;
+            double[] filteredData;
             double[] sensorData = convertFloatsToDoubles(sensorEvent.values);
 
             if (calibrationMeter > CALIBRATIONTIME) {
@@ -72,29 +73,28 @@ public class MainActivity extends AppCompatActivity {
                 sensorData[1] -= accelerometerCalibrationY;
                 sensorData[2] -= accelerometerCalibrationZ;
 
-                acceleration.readFromArray(sensorData);
+                if(sensorData[0] < 0.1d && sensorData[0] > -0.1d)
+                    sensorData[0] = 0.0d;
 
-                for (int i = 0; i < acceleration.getAccelerationComponents().size(); i++) {
-                    System.out.println(String.format("%.4f", acceleration.getAccelerationComponents().get(i)));
-                }
+                if(sensorData[1] < 0.1d && sensorData[1] > -0.1d)
+                    sensorData[1] = 0.0d;
 
-                //List<Double> measurements = new ArrayList<Double>();
-                //measurements.add(sensorData[0]);
-                //measurements.add(sensorData[1]);
-                //measurements.add(sensorData[2]);
-                //filteredData = filter.estimateMeasurements(measurements);
-                acceleration.readFromArray(sensorData);
+                if(sensorData[2] < 0.1d && sensorData[2] > -0.1d)
+                    sensorData[2] = 0.0d;
 
-                System.out.println("Dodatkowo przefiltrowany:");
-                for (int i = 0; i < acceleration.getAccelerationComponents().size(); i++) {
-                    System.out.println(String.format("%.4f", acceleration.getAccelerationComponents().get(i)));
-                }
+                List<Double> measurements = new ArrayList<Double>();
+                measurements.add(sensorData[0]);
+                measurements.add(sensorData[1]);
+                measurements.add(sensorData[2]);
+                filteredData = filter.estimateMeasurements(measurements);
+
+                acceleration.readFromArray(filteredData);
 
                 coordinatesTitle.setText("Współrzędne: ");
                 accelerometerTitle.setText("Akcelerometr: ");
+
                 coordinates.setCoordinates(acceleration, READINGRATE / 1000000.0,
                             distance, velocity);
-
 
             } else if (calibrationMeter == CALIBRATIONTIME) {
                 calibrationMeter++;
@@ -113,11 +113,7 @@ public class MainActivity extends AppCompatActivity {
             slower++;
             if (slower > SLOWERRATE) {
                 slower = 0;
-               // if (calibrationMeter > CALIBRATIONTIME) {
-                 //   showCoordinates(new double[]{filteredData[6], filteredData[7], filteredData[8]});
-                //} else {
-                    showCoordinates(sensorData);
-                //}
+                showCoordinates(sensorData);
             }
         }
 
@@ -137,6 +133,15 @@ public class MainActivity extends AppCompatActivity {
                 sensorData[1] -= gyroscopeCalibrationY;
                 sensorData[2] -= gyroscopeCalibrationZ;
 
+                if(sensorData[0] < 0.01d && sensorData[0] > -0.01d)
+                    sensorData[0] = 0.0d;
+
+                if(sensorData[1] < 0.01d && sensorData[1] > -0.01d)
+                    sensorData[1] = 0.0d;
+
+                if(sensorData[2] < 0.01d && sensorData[2] > -0.01d)
+                    sensorData[2] = 0.0d;
+
                 float[] deltaRotationVector = rotation.getDeltaRotationVector(sensorData, READINGRATE / 1000000d);
                 float[] deltaRotationMatrix = new float[9];
 
@@ -147,11 +152,6 @@ public class MainActivity extends AppCompatActivity {
                 rotation.setRotationMatrix(deltaRotationMatrix);
 
                 rotation.updateWithSensorData(angleChange);
-
-                System.out.println("rotation");
-                for (int i = 0; i < rotation.getRotationComponents().size(); i++) {
-                    System.out.println(String.format("%.4f", rotation.getRotationComponents().get(i)));
-                }
 
                 gyroscopeTitle.setText("Żyroskop: ");
 

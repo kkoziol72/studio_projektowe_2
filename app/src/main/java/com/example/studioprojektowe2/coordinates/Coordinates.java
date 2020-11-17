@@ -1,5 +1,7 @@
 package com.example.studioprojektowe2.coordinates;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +45,10 @@ public class Coordinates {
                                Velocity velocity) {
         distance.updateDistance(acceleration, time, velocity);
         velocity.updateVelocity(acceleration, time);
+        if(acceleration.getAccelerationComponents().size() >= 3)
+            Log.d("TAGG SEnSOR aCCC", "("+acceleration.getAccelerationComponents().get(0)+", "+acceleration.getAccelerationComponents().get(1)+","+acceleration.getAccelerationComponents().get(2)+")");
+        if(velocity.getVelocityComponents().size() >= 3)
+            Log.d("TAGG SEnSOR vellll", "("+velocity.getVelocityComponents().get(0)+", "+velocity.getVelocityComponents().get(1)+","+velocity.getVelocityComponents().get(2)+")");
         updateCoordinates(distance);
     }
 
