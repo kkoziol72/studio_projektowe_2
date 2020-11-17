@@ -113,11 +113,7 @@ public class MainActivity extends AppCompatActivity {
             slower++;
             if (slower > SLOWERRATE) {
                 slower = 0;
-               if (calibrationMeter > CALIBRATIONTIME) {
-                   showCoordinates(new double[]{filteredData[6], filteredData[7], filteredData[8]});
-                } else {
-                    showCoordinates(sensorData);
-                }
+               showCoordinates(sensorData);
             }
         }
 
