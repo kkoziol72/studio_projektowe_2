@@ -137,8 +137,18 @@ public class MainActivity extends AppCompatActivity {
                 sensorData[1] -= gyroscopeCalibrationY;
                 sensorData[2] -= gyroscopeCalibrationZ;
 
-                rotation.updateWithSensorData(sensorData);
+                float[] deltaRotationVector = rotation.getDeltaRotationVector(sensorData, READINGRATE / 1000000d);
+                float[] deltaRotationMatrix = new float[9];
 
+                SensorManager.getRotationMatrixFromVector(deltaRotationMatrix, deltaRotationVector);
+                float[] angleChange = new float[3];
+                SensorManager.getAngleChange(angleChange, deltaRotationMatrix, rotation.getRotationMatrix());
+
+                rotation.setRotationMatrix(deltaRotationMatrix);
+
+                rotation.updateWithSensorData(angleChange);
+
+                System.out.println("rotation");
                 for (int i = 0; i < rotation.getRotationComponents().size(); i++) {
                     System.out.println(String.format("%.4f", rotation.getRotationComponents().get(i)));
                 }
@@ -263,9 +273,9 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint({"DefaultLocale", "SetTextI18n"})
     private void showRotationData(double [] gyroscopeData) {
-        gyroscopeXValue.setText("x: " + String.format("%.4f stopni", Math.toDegrees(gyroscopeData[0])));
-        gyroscopeYValue.setText("y: " + String.format("%.4f stopni", Math.toDegrees(gyroscopeData[1])));
-        gyroscopeZValue.setText("z: " + String.format("%.4f stopni", Math.toDegrees(gyroscopeData[2])));
+        gyroscopeXValue.setText("x: " + String.format("%.4f rad/s", gyroscopeData[0]));
+        gyroscopeYValue.setText("y: " + String.format("%.4f rad/s", gyroscopeData[0]));
+        gyroscopeZValue.setText("z: " + String.format("%.4f rad/s", gyroscopeData[1]));
     }
 
     public static double[] convertFloatsToDoubles(float[] input) {
