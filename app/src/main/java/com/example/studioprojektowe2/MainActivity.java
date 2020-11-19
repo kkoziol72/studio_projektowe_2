@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     TextView gyroscopeXValue, gyroscopeYValue, gyroscopeZValue, gyroscopeTitle,
             accelerometerXValue, accelerometerYValue, accelerometerZValue, accelerometerTitle,
-            coordinatesTitle, coordinatesXValue, coordinatesYValue, coordinatesZValue;
+            coordinatesTitle, coordinatesXValue, velocityXValue, coordinatesYValue, velocityYValue, coordinatesZValue, velocityZValue;
 
     public final static int READINGRATE = 2000;
 
@@ -205,8 +205,11 @@ public class MainActivity extends AppCompatActivity {
         coordinatesTitle = findViewById(R.id.coordinates);
         coordinatesTitle.setText("Współrzędne: ");
         coordinatesXValue = findViewById(R.id.coordinatesXValue);
+        velocityXValue = findViewById(R.id.velocityXValue);
         coordinatesYValue = findViewById(R.id.coordinatesYValue);
+        velocityYValue = findViewById(R.id.velocityYValue);
         coordinatesZValue = findViewById(R.id.coordinatesZValue);
+        velocityZValue = findViewById(R.id.velocitysZValue);
 
         SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -267,8 +270,11 @@ public class MainActivity extends AppCompatActivity {
         accelerometerZValue.setText("z: " + String.format("%.4f", sensorData[2]));
 
         coordinatesXValue.setText("x: " + String.format("%.4f", coordinates.getCoordinatesComponents().get(0)));
+        velocityXValue.setText("vx: " + String.format("%.4f", velocity.getVelocityComponents().get(0)));
         coordinatesYValue.setText("y: " + String.format("%.4f", coordinates.getCoordinatesComponents().get(1)));
+        velocityYValue.setText("vy: " + String.format("%.4f", velocity.getVelocityComponents().get(1)));
         coordinatesZValue.setText("z: " + String.format("%.4f", coordinates.getCoordinatesComponents().get(2)));
+        velocityZValue.setText("vz: " + String.format("%.4f", velocity.getVelocityComponents().get(2)));
     }
 
     @SuppressLint({"DefaultLocale", "SetTextI18n"})
