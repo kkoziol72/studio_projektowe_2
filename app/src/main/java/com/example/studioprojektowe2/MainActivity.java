@@ -142,16 +142,17 @@ public class MainActivity extends AppCompatActivity {
                 if(sensorData[2] < 0.01d && sensorData[2] > -0.01d)
                     sensorData[2] = 0.0d;
 
-                float[] deltaRotationVector = rotation.getDeltaRotationVector(sensorData, READINGRATE / 1000000d);
-                float[] deltaRotationMatrix = new float[9];
+                // float[] deltaRotationVector = rotation.getDeltaRotationVector(sensorData, READINGRATE / 1000000d);
+                // float[] deltaRotationMatrix = new float[9];
 
-                SensorManager.getRotationMatrixFromVector(deltaRotationMatrix, deltaRotationVector);
-                float[] angleChange = new float[3];
-                SensorManager.getAngleChange(angleChange, deltaRotationMatrix, rotation.getRotationMatrix());
+                // SensorManager.getRotationMatrixFromVector(deltaRotationMatrix, deltaRotationVector);
+                // float[] angleChange = new float[3];
+                // SensorManager.getAngleChange(angleChange, deltaRotationMatrix, rotation.getRotationMatrix());
 
-                rotation.setRotationMatrix(deltaRotationMatrix);
+                // rotation.setRotationMatrix(deltaRotationMatrix);
 
-                rotation.updateWithSensorData(angleChange);
+                double [] angles = rotation.getDeltaRotationVector(sensorData, READINGRATE / 1000000d);
+                rotation.updateWithSensorData(angles);
 
                 gyroscopeTitle.setText("Żyroskop: ");
 

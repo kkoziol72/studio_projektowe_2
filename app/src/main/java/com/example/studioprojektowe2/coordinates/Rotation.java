@@ -9,7 +9,7 @@ public class Rotation {
 
     private List<Double> rotationComponents;
 
-    private float[] rotationMatrix = new float[9];
+    // private float[] rotationMatrix = new float[9];
 
     public Rotation() {
         rotationComponents = new ArrayList<>();
@@ -37,9 +37,9 @@ public class Rotation {
         this.rotationComponents = rotationComponents;
     }
 
-    public float[] getRotationMatrix() { return rotationMatrix; }
-
-    public void setRotationMatrix(float [] rotationMatrix) { this.rotationMatrix = rotationMatrix; }
+//    public float[] getRotationMatrix() { return rotationMatrix; }
+//
+//    public void setRotationMatrix(float [] rotationMatrix) { this.rotationMatrix = rotationMatrix; }
 
     public List<Double> getDegreesFromRadians() {
         List <Double> componentsDegress = new ArrayList<>();
@@ -51,33 +51,38 @@ public class Rotation {
         return componentsDegress;
     }
 
-    public float[] getDeltaRotationVector(double [] sensorData, double t) {
-        float[] deltaRotationVector = new float[4];
-
-        double axisX = sensorData[0];
-        double axisY = sensorData[1];
-        double axisZ = sensorData[2];
-
-        double omegaMagnitude = Math.sqrt(axisX*axisX + axisY*axisY + axisZ*axisZ);
-
-        if(omegaMagnitude != 0){
-            axisX /= omegaMagnitude;
-            axisY /= omegaMagnitude;
-            axisZ /= omegaMagnitude;
+    public double[] getDeltaRotationVector(double [] sensorData, double t) {
+//        float[] deltaRotationVector = new float[4];
+//
+//        double axisX = sensorData[0];
+//        double axisY = sensorData[1];
+//        double axisZ = sensorData[2];
+//
+//        double omegaMagnitude = Math.sqrt(axisX*axisX + axisY*axisY + axisZ*axisZ);
+//
+//        if(omegaMagnitude != 0){
+//            axisX /= omegaMagnitude;
+//            axisY /= omegaMagnitude;
+//            axisZ /= omegaMagnitude;
+//        }
+//
+//        double thetaOverTwo = omegaMagnitude * t / 2.0f;
+//        double sinThetaOverTwo = Math.sin(thetaOverTwo);
+//        double cosThetaOverTwo = Math.cos(thetaOverTwo);
+//        deltaRotationVector[0] = (float)(sinThetaOverTwo * axisX);
+//        deltaRotationVector[1] = (float)(sinThetaOverTwo * axisY);
+//        deltaRotationVector[2] = (float)(sinThetaOverTwo * axisZ);
+//        deltaRotationVector[3] = (float)(cosThetaOverTwo);
+//
+//        return deltaRotationVector;
+        double [] angles = new double[sensorData.length];
+        for (int i = 0; i < sensorData.length; i++) {
+            angles[i] = sensorData[i] * t;
         }
-
-        double thetaOverTwo = omegaMagnitude * t / 2.0f;
-        double sinThetaOverTwo = Math.sin(thetaOverTwo);
-        double cosThetaOverTwo = Math.cos(thetaOverTwo);
-        deltaRotationVector[0] = (float)(sinThetaOverTwo * axisX);
-        deltaRotationVector[1] = (float)(sinThetaOverTwo * axisY);
-        deltaRotationVector[2] = (float)(sinThetaOverTwo * axisZ);
-        deltaRotationVector[3] = (float)(cosThetaOverTwo);
-
-        return deltaRotationVector;
+        return angles;
     }
 
-    public void updateWithSensorData(float[] angleChange) {
+    public void updateWithSensorData(double[] angleChange) {
         if (angleChange.length <= this.rotationComponents.size()) {
             for (int i = 0; i < angleChange.length; i++) {
                 this.rotationComponents.set(i, this.rotationComponents.get(i) + angleChange[i]);
