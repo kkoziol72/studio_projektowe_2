@@ -19,6 +19,7 @@ import com.example.studioprojektowe2.coordinates.Distance;
 import com.example.studioprojektowe2.coordinates.Rotation;
 import com.example.studioprojektowe2.coordinates.Velocity;
 import com.example.studioprojektowe2.filter.AccelerationKalmanFilter;
+import com.example.studioprojektowe2.filter.RotationKalmanFilter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
     Coordinates coordinates = new Coordinates();
     Rotation rotation = new Rotation();
 
+    private RotationKalmanFilter xAngleFilter = new RotationKalmanFilter();
+    private RotationKalmanFilter yAngleFilter = new RotationKalmanFilter();
+    private RotationKalmanFilter zAngleFilter = new RotationKalmanFilter();
     private int calibrationMeter = 0;
     private int calibrationMeter_G = 0;
     private double accelerometerCalibrationX = 0.0;
@@ -58,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     private double gyroscopeCalibrationZ = 0.0;
     private int slower = 0;
     private int slower_G = 0;
+    double[] lastAngleData;
 
     private final AccelerationKalmanFilter filter = new AccelerationKalmanFilter();
 
@@ -67,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
         public void onSensorChanged(SensorEvent sensorEvent) {
             double[] filteredData;
             double[] sensorData = convertFloatsToDoubles(sensorEvent.values);
-
             if (calibrationMeter > CALIBRATIONTIME) {
                 sensorData[0] -= accelerometerCalibrationX;
                 sensorData[1] -= accelerometerCalibrationY;
@@ -127,7 +131,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
             double[] sensorData = convertFloatsToDoubles(sensorEvent.values);
-
             if (calibrationMeter_G > CALIBRATIONTIME_G) {
                 sensorData[0] -= gyroscopeCalibrationX;
                 sensorData[1] -= gyroscopeCalibrationY;
@@ -152,7 +155,15 @@ public class MainActivity extends AppCompatActivity {
                 // rotation.setRotationMatrix(deltaRotationMatrix);
 
                 double [] angles = rotation.getDeltaRotationVector(sensorData, READINGRATE / 1000000d);
-                rotation.updateWithSensorData(angles);
+                double[] degrees = Rotation.getDegreesFromRadians(angles);
+                double[] rate = Rotation.getDegreesPerSec(degrees, READINGRATE / 1000000d);
+
+                double[] fixedDegrees = new double[angles.length];
+                fixedDegrees[0] = xAngleFilter.getAngle(degrees[0], rate[0], READINGRATE / 1000000d);
+                fixedDegrees[1] = yAngleFilter.getAngle(degrees[1], rate[1], READINGRATE / 1000000d);
+                fixedDegrees[2] = zAngleFilter.getAngle(degrees[2], rate[2], READINGRATE / 1000000d);
+                double[] updatedAngles = Rotation.getRadiansFromDegrees(fixedDegrees);
+                rotation.updateWithSensorData(updatedAngles);
 
                 gyroscopeTitle.setText("Żyroskop: ");
 

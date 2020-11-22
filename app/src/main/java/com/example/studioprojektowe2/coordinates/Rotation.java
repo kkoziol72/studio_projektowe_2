@@ -51,6 +51,30 @@ public class Rotation {
         return componentsDegress;
     }
 
+    public static double[] getRadiansFromDegrees(double[] degrees) {
+        double[] radians = new double[degrees.length];
+        for (int i = 0; i < radians.length; i++) {
+            radians[i] = degrees[i] / 180.0d * Math.PI;
+        }
+        return radians;
+    }
+
+    public static double[] getDegreesFromRadians(double[] radians) {
+        double[] degrees = new double[radians.length];
+        for (int i = 0; i < radians.length; i++) {
+            degrees[i] = radians[i] * 180.0d/Math.PI;
+        }
+        return degrees;
+    }
+
+    public static double[] getDegreesPerSec(double[] degrees, double time) {
+        double[] degreesPerSec = new double[degrees.length];
+        for (int i = 0; i < degreesPerSec.length; i++) {
+            degreesPerSec[i] = degrees[i] / time;
+        }
+        return degreesPerSec;
+    }
+
     public double[] getDeltaRotationVector(double [] sensorData, double t) {
 //        float[] deltaRotationVector = new float[4];
 //
