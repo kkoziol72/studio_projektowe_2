@@ -1,48 +1,57 @@
 package com.example.studioprojektowe2.coordinates;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Acceleration {
 
-    private Float a_x = 0.0F;
-    private Float a_y = 0.0F;
-    private Float a_z = 0.0F;
+    private List<Double> accelerationComponents;
 
-    public Acceleration() {}
-
-    public Acceleration(Float a_x, Float a_y, Float a_z) {
-        this.a_x = a_x;
-        this.a_y = a_y;
-        this.a_z = a_z;
+    public Acceleration() {
+        this.accelerationComponents = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            this.accelerationComponents.add(0.0d);
+        }
     }
 
-    public Float getA_x() {
-        return a_x;
+    public Acceleration(List<Double> accelerationComponents) {
+        this.accelerationComponents = accelerationComponents;
     }
 
-    public void setA_x(Float a_x) {
-        this.a_x = a_x;
+    public List<Double> getAccelerationComponents() {
+        return accelerationComponents;
     }
 
-    public Float getA_y() {
-        return a_y;
-    }
-
-    public void setA_y(Float a_y) {
-        this.a_y = a_y;
-    }
-
-    public Float getA_z() {
-        return a_z;
-    }
-
-    public void setA_z(Float a_z) {
-        this.a_z = a_z;
+    public void setAccelerationComponents(List<Double> accelerationComponents) {
+        this.accelerationComponents = accelerationComponents;
     }
 
     public void setAccelerationTo0() {
-        this.a_x = 0.0F;
-        this.a_y = 0.0F;
-        this.a_z = 0.0F;
+        for (int i = 0; i < this.accelerationComponents.size(); i++) {
+            this.accelerationComponents.set(i, 0.0d);
+        }
+    }
+
+    public double[] toArray() {
+        double [] array = new double[this.accelerationComponents.size()];
+        for (int i = 0; i < this.accelerationComponents.size(); i++) {
+            array[i] = this.accelerationComponents.get(i);
+        }
+        return array;
+    }
+
+    public void readFromArray(double[] data) {
+        if (this.accelerationComponents.size() >= data.length) {
+            for (int i = 0; i < data.length; i++) {
+                this.accelerationComponents.set(i, data[i]);
+            }
+        }
+        else {
+            for (int i = 0; i < this.accelerationComponents.size(); i++) {
+                this.accelerationComponents.set(i, data[i]);
+            }
+        }
     }
 
 }

@@ -18,6 +18,7 @@ import com.example.studioprojektowe2.coordinates.Coordinates;
 import com.example.studioprojektowe2.coordinates.Distance;
 import com.example.studioprojektowe2.coordinates.Velocity;
 
+
 public class MainActivity extends AppCompatActivity {
 
     TextView gyroscopeXValue, gyroscopeYValue, gyroscopeZValue, gyroscopeTitle,
@@ -40,15 +41,13 @@ public class MainActivity extends AppCompatActivity {
                 accelerometerYValue.setText("y: " + sensorEvent.values[1]);
                 accelerometerZValue.setText("z: " + sensorEvent.values[2]);
 
-                acceleration.setA_x(sensorEvent.values[0]);
-                acceleration.setA_y(sensorEvent.values[1]);
-                acceleration.setA_z(sensorEvent.values[2]);
+                acceleration.readFromArray(convertFloatsToDoubles(sensorEvent.values));
 
-                coordinates.setCoordinates(acceleration, READINGRATE / 1000000.0F,
+                coordinates.setCoordinates(acceleration, READINGRATE / 1000000.0D,
                         distance, velocity);
-                coordinatesXValue.setText("x: " + coordinates.getX());
-                coordinatesYValue.setText("y: " + coordinates.getY());
-                coordinatesZValue.setText("z: " + coordinates.getZ());
+                coordinatesXValue.setText("x: " + coordinates.getCoordinatesComponents().get(0));
+                coordinatesYValue.setText("y: " + coordinates.getCoordinatesComponents().get(1));
+                coordinatesZValue.setText("z: " + coordinates.getCoordinatesComponents().get(2));
             }
 
             @Override
@@ -109,6 +108,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
+    public static double[] convertFloatsToDoubles(float[] input) {
+        if (input == null) {
+            return null;
+        }
+        double[] output = new double[input.length];
+        for (int i = 0; i < input.length; i++) {
+            output[i] = input[i];
+        }
+        return output;
+    }
 
 }

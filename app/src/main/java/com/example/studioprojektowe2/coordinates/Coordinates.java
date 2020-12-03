@@ -1,68 +1,55 @@
 package com.example.studioprojektowe2.coordinates;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Coordinates {
 
-    private Float x = 0.0F;
-    private Float y = 0.0F;
-    private Float z = 0.0F;
+    private List<Double> coordinatesComponents;
 
-    public Coordinates() {}
-
-    public Coordinates(Float x, Float y, Float z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    public Coordinates() {
+        this.coordinatesComponents = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            this.coordinatesComponents.add(0.0d);
+        }
     }
 
-    public Float getX() {
-        return x;
+    public Coordinates(List<Double> coordinatesComponents) {
+        this.coordinatesComponents = coordinatesComponents;
     }
 
-    public void setX(Float x) {
-        this.x = x;
+    public List<Double> getCoordinatesComponents() {
+        return coordinatesComponents;
     }
 
-    public Float getY() {
-        return y;
-    }
-
-    public void setY(Float y) {
-        this.y = y;
-    }
-
-    public Float getZ() {
-        return z;
-    }
-
-    public void setZ(Float z) {
-        this.z = z;
+    public void setCoordinatesComponents(List<Double> coordinatesComponents) {
+        this.coordinatesComponents = coordinatesComponents;
     }
 
     public void updateCoordinates(Distance distance) {
-        this.x = this.x + distance.getX();
-        this.y = this.y + distance.getY();
-        this.z = this.z + distance.getZ();
+        if (distance.getDistanceComponents().size() >= this.coordinatesComponents.size()) {
+            for (int i = 0; i < this.coordinatesComponents.size(); i++) {
+                this.coordinatesComponents.set(i, this.coordinatesComponents.get(i) + distance.getDistanceComponents().get(i));
+            }
+        } else {
+            for (int i = 0; i < distance.getDistanceComponents().size(); i++) {
+                this.coordinatesComponents.set(i, this.coordinatesComponents.get(i) + distance.getDistanceComponents().get(i));
+            }
+        }
     }
 
-    public void setCoordinates(Acceleration acceleration, Float time, Distance distance,
+    public void setCoordinates(Acceleration acceleration, Double time, Distance distance,
                                Velocity velocity) {
         distance.updateDistance(acceleration, time, velocity);
         velocity.updateVelocity(acceleration, time);
         updateCoordinates(distance);
     }
 
-    public void printCoordinates() {
-        System.out.println("x = " + this.x.toString());
-        System.out.println("y = " + this.y.toString());
-        System.out.println("z = " + this.z.toString());
-        System.out.println();
-    }
-
     public void setCoordinatesTo0() {
-        this.x = 0.0F;
-        this.y = 0.0F;
-        this.z = 0.0F;
+        for (int i = 0; i < this.coordinatesComponents.size(); i++) {
+            this.coordinatesComponents.set(i, 0.0d);
+        }
     }
 
 }

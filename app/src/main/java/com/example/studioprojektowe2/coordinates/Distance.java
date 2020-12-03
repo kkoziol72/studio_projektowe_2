@@ -1,54 +1,49 @@
 package com.example.studioprojektowe2.coordinates;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Distance {
 
-    private Float x = 0.0F;
-    private Float y = 0.0F;
-    private Float z = 0.0F;
+    private List<Double> distanceComponents;
 
-    public Distance() {}
-
-    public Distance(Float x, Float y, Float z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    public Distance() {
+        this.distanceComponents = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            this.distanceComponents.add(0.0d);
+        }
     }
 
-    public Float getX() {
-        return x;
+    public Distance(List<Double> distanceComponents) {
+        this.distanceComponents = distanceComponents;
     }
 
-    public void setX(Float x) {
-        this.x = x;
+    public List<Double> getDistanceComponents() {
+        return distanceComponents;
     }
 
-    public Float getY() {
-        return y;
+    public void setDistanceComponents(List<Double> distanceComponents) {
+        this.distanceComponents = distanceComponents;
     }
 
-    public void setY(Float y) {
-        this.y = y;
-    }
-
-    public Float getZ() {
-        return z;
-    }
-
-    public void setZ(Float z) {
-        this.z = z;
-    }
-
-    public void updateDistance(Acceleration acceleration, Float time, Velocity velocity) {
-        this.x = (velocity.getV_x() * time) + (0.5F * acceleration.getA_x() * time * time);
-        this.y = (velocity.getV_y() * time) + (0.5F * acceleration.getA_y() * time * time);
-        this.z = (velocity.getV_z() * time) + (0.5F * acceleration.getA_z() * time * time);
+    public void updateDistance(Acceleration acceleration, Double time, Velocity velocity) {
+        if (acceleration.getAccelerationComponents().size() >= this.distanceComponents.size() && velocity.getVelocityComponents().size() >= this.distanceComponents.size()) {
+            for (int i = 0; i < this.distanceComponents.size(); i++) {
+                this.distanceComponents.set(i, (velocity.getVelocityComponents().get(i) * time) + (0.5d * acceleration.getAccelerationComponents().get(i) * time * time));
+            }
+        }
+        else {
+            for (int i = 0; i < acceleration.getAccelerationComponents().size(); i++) {
+                this.distanceComponents.set(i, (velocity.getVelocityComponents().get(i) * time) + (0.5d * acceleration.getAccelerationComponents().get(i) * time * time));
+            }
+        }
     }
 
     public void setDistanceTo0() {
-        this.x = 0.0F;
-        this.y = 0.0F;
-        this.z = 0.0F;
+        for (int i = 0; i < this.distanceComponents.size(); i++) {
+            this.distanceComponents.set(i, 0.0d);
+        }
     }
 
 }

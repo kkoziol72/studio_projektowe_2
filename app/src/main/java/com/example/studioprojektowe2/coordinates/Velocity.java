@@ -1,54 +1,55 @@
 package com.example.studioprojektowe2.coordinates;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Velocity {
 
-    private Float v_x = 0.0F;
-    private Float v_y = 0.0F;
-    private Float v_z = 0.0F;
+    private List<Double> velocityComponents;
 
-    public Velocity() {}
-
-    public Velocity(Float v_x, Float v_y, Float v_z) {
-        this.v_x = v_x;
-        this.v_y = v_y;
-        this.v_z = v_z;
+    public Velocity() {
+        this.velocityComponents = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            this.velocityComponents.add(0.0d);
+        }
     }
 
-    public Float getV_x() {
-        return v_x;
+    public Velocity(List<Double> velocityComponents) {
+        this.velocityComponents = velocityComponents;
     }
 
-    public void setV_x(Float v_x) {
-        this.v_x = v_x;
+    public List<Double> getVelocityComponents() {
+        return velocityComponents;
     }
 
-    public Float getV_y() {
-        return v_y;
+    public void setVelocityComponents(List<Double> velocityComponents) {
+        this.velocityComponents = velocityComponents;
     }
 
-    public void setV_y(Float v_y) {
-        this.v_y = v_y;
-    }
-
-    public Float getV_z() {
-        return v_z;
-    }
-
-    public void setV_z(Float v_z) {
-        this.v_z = v_z;
-    }
-
-    public void updateVelocity(Acceleration acceleration, Float time) {
-        this.v_x = this.v_x + (acceleration.getA_x() * time);
-        this.v_y = this.v_y + (acceleration.getA_y() * time);
-        this.v_z = this.v_z + (acceleration.getA_z() * time);
+    public void updateVelocity(Acceleration acceleration, Double time) {
+        if (acceleration.getAccelerationComponents().size() >= this.velocityComponents.size()) {
+            for (int i = 0; i < this.velocityComponents.size(); i++) {
+                if(acceleration.getAccelerationComponents().get(i) == 0) {
+                    this.velocityComponents.set(i, 0.0d);
+                }
+                else {
+                    this.velocityComponents.set(i, this.velocityComponents.get(i) + (acceleration.getAccelerationComponents().get(i) * time));
+                }
+            }
+        }
+        else {
+            for (int i = 0; i < acceleration.getAccelerationComponents().size(); i++) {
+                if(acceleration.getAccelerationComponents().get(i) == 0) this.velocityComponents.set(i, 0.0d);
+                else
+                    this.velocityComponents.set(i, this.velocityComponents.get(i) + (acceleration.getAccelerationComponents().get(i) * time));            }
+        }
     }
 
     public void setVelocityTo0() {
-        this.v_x = 0.0F;
-        this.v_y = 0.0F;
-        this.v_z = 0.0F;
+        for (int i = 0; i < this.velocityComponents.size(); i++) {
+            this.velocityComponents.set(i, 0.0d);
+        }
     }
 
 }
