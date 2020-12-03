@@ -73,26 +73,44 @@ public class MainActivity extends AppCompatActivity {
             double[] filteredData;
             double[] sensorData = convertFloatsToDoubles(sensorEvent.values);
             if (calibrationMeter > CALIBRATIONTIME) {
-                sensorData[0] -= accelerometerCalibrationX;
-                sensorData[1] -= accelerometerCalibrationY;
-                sensorData[2] -= accelerometerCalibrationZ;
-
-                if(sensorData[0] < 0.1d && sensorData[0] > -0.1d)
-                    sensorData[0] = 0.0d;
-
-                if(sensorData[1] < 0.1d && sensorData[1] > -0.1d)
-                    sensorData[1] = 0.0d;
-
-                if(sensorData[2] < 0.1d && sensorData[2] > -0.1d)
-                    sensorData[2] = 0.0d;
-
                 List<Double> measurements = new ArrayList<Double>();
                 measurements.add(sensorData[0]);
                 measurements.add(sensorData[1]);
                 measurements.add(sensorData[2]);
-                filteredData = filter.estimateMeasurements(measurements);
+                acceleration.setAccelerationComponents(measurements);
 
-                acceleration.readFromArray(filteredData);
+                rotation.countNewAccelerationByRotation(acceleration);
+
+                acceleration.addToComponent(0, 0-accelerometerCalibrationX);
+                acceleration.addToComponent(1, 0-accelerometerCalibrationY);
+                acceleration.addToComponent(2, 0-accelerometerCalibrationZ);
+
+
+                if(acceleration.getAccelerationComponents().get(0) < 0.1d && acceleration.getAccelerationComponents().get(0) > -0.1d)
+                    acceleration.getAccelerationComponents().set(0, 0.0d);
+
+                if(acceleration.getAccelerationComponents().get(1) < 0.1d && acceleration.getAccelerationComponents().get(1) > -0.1d)
+                    acceleration.getAccelerationComponents().set(1, 0.0d);
+
+                if(acceleration.getAccelerationComponents().get(2) < 0.1d && acceleration.getAccelerationComponents().get(2) > -0.1d)
+                    acceleration.getAccelerationComponents().set(2, 0.0d);
+
+//                if(sensorData[1] < 0.1d && sensorData[1] > -0.1d)
+//                    sensorData[1] = 0.0d;
+//
+//                if(sensorData[2] < 0.1d && sensorData[2] > -0.1d)
+//                    sensorData[2] = 0.0d;
+//
+//                List<Double> measurements = new ArrayList<Double>();
+//                measurements.add(sensorData[0]);
+//                measurements.add(sensorData[1]);
+//                measurements.add(sensorData[2]);
+
+                // Kalman
+//                filteredData = filter.estimateMeasurements(measurements);
+//                acceleration.readFromArray(filteredData);
+
+//                acceleration.setAccelerationComponents(measurements);
 
                 coordinatesTitle.setText("Współrzędne: ");
                 accelerometerTitle.setText("Akcelerometr: ");
@@ -106,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
                 accelerometerCalibrationY = accelerometerCalibrationY / CALIBRATIONTIME;
                 accelerometerCalibrationZ = accelerometerCalibrationZ / CALIBRATIONTIME;
                 resetData();
+                printAll();
+                printAll();
             } else {
                 coordinatesTitle.setText("Współrzędne: TRWA KALIBRACJA");
                 accelerometerTitle.setText("Akcelerometr: TRWA KALIBRACJA");
@@ -167,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
 
                 gyroscopeTitle.setText("Żyroskop: ");
 
-                coordinates.countCoordinatesOnRotation(rotation);
+//                coordinates.countCoordinatesOnRotation(rotation);
 
             } else if (calibrationMeter_G == CALIBRATIONTIME_G) {
                 calibrationMeter_G++;
@@ -186,6 +206,7 @@ public class MainActivity extends AppCompatActivity {
             if (slower_G > SLOWERRATE_G) {
                 slower_G = 0;
                 showRotationData(sensorData);
+
             }
 
         }
@@ -305,5 +326,18 @@ public class MainActivity extends AppCompatActivity {
             output[i] = input[i];
         }
         return output;
+    }
+
+    private void printAll() {
+        System.out.println("Acceleration:");
+        System.out.println(acceleration.getAccelerationComponents().toString());
+        System.out.println("Velocity:");
+        System.out.println(velocity.getVelocityComponents().toString());
+        System.out.println("Distance:");
+        System.out.println(distance.getDistanceComponents().toString());
+        System.out.println("Coordinates:");
+        System.out.println(coordinates.getCoordinatesComponents().toString());
+        System.out.println("Rotation:");
+        System.out.println(rotation.getRotationComponents().toString());
     }
 }

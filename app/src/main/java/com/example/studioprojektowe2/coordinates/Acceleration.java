@@ -32,6 +32,10 @@ public class Acceleration {
         }
     }
 
+    public void addToComponent(int i, double val) {
+        this.accelerationComponents.set(i, this.accelerationComponents.get(i) + val);
+    }
+
     public double[] toArray() {
         double [] array = new double[this.accelerationComponents.size()];
         for (int i = 0; i < this.accelerationComponents.size(); i++) {

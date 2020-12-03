@@ -5,6 +5,8 @@ import android.hardware.SensorManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+
 public class Rotation {
 
     private List<Double> rotationComponents;
@@ -123,6 +125,58 @@ public class Rotation {
         for (int i = 0; i < this.rotationComponents.size(); i++) {
             this.rotationComponents.set(i, 0.0d);
         }
+    }
+
+    public void countNewAccelerationByRotation(Acceleration acceleration) {
+        // matrix
+        double [][] xRotation = new double[][] {
+                {1, 0, 0},
+                {0, Math.cos(rotationComponents.get(0)), 0-Math.sin(rotationComponents.get(0))},
+                {0, Math.sin(rotationComponents.get(0)), Math.cos(rotationComponents.get(0))}
+        };
+        double [][] yRotation = new double[][] {
+                {Math.cos(rotationComponents.get(0)), 0, Math.sin(rotationComponents.get(0))},
+                {0, 1, 0},
+                {0-Math.sin(rotationComponents.get(0)), 0, Math.cos(rotationComponents.get(0))}
+        };
+        double [][] zRotation = new double[][] {
+                {Math.cos(rotationComponents.get(0)), 0-Math.sin(rotationComponents.get(0)), 0},
+                {Math.sin(rotationComponents.get(0)), Math.cos(rotationComponents.get(0)), 0},
+                {0, 0, 1}
+        };
+
+        // transform by x
+        List<Double> finalAcc = new ArrayList<>();
+        for (double[] m : xRotation) {
+            double value = 0d;
+            for (int k = 0; k < m.length; k++) {
+                value += m[k] * acceleration.getAccelerationComponents().get(k);
+            }
+            finalAcc.add(value);
+        }
+        acceleration.setAccelerationComponents(finalAcc);
+
+        // transform by y
+        finalAcc = new ArrayList<>();
+        for (double[] m : yRotation) {
+            double value = 0d;
+            for (int k = 0; k < m.length; k++) {
+                value += m[k] * acceleration.getAccelerationComponents().get(k);
+            }
+            finalAcc.add(value);
+        }
+        acceleration.setAccelerationComponents(finalAcc);
+
+        // transform by z
+        finalAcc = new ArrayList<>();
+        for (double[] m : zRotation) {
+            double value = 0d;
+            for (int k = 0; k < m.length; k++) {
+                value += m[k] * acceleration.getAccelerationComponents().get(k);
+            }
+            finalAcc.add(value);
+        }
+        acceleration.setAccelerationComponents(finalAcc);
     }
 
 }

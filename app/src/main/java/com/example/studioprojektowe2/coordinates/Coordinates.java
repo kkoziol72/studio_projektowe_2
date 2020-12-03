@@ -49,6 +49,7 @@ public class Coordinates {
             Log.d("TAGG SEnSOR aCCC", "("+acceleration.getAccelerationComponents().get(0)+", "+acceleration.getAccelerationComponents().get(1)+","+acceleration.getAccelerationComponents().get(2)+")");
         if(velocity.getVelocityComponents().size() >= 3)
             Log.d("TAGG SEnSOR vellll", "("+velocity.getVelocityComponents().get(0)+", "+velocity.getVelocityComponents().get(1)+","+velocity.getVelocityComponents().get(2)+")");
+//        countDistanceOnRotation(distance, rotation);
         updateCoordinates(distance);
     }
 
@@ -58,7 +59,7 @@ public class Coordinates {
         }
     }
 
-    public void countCoordinatesOnRotation(Rotation rotation) {
+    public void countDistanceOnRotation(Distance distance, Rotation rotation) {
         double [][] axes = new double[][]{
                 {1d, 0d, 0d},
                 {0d, 1d, 0d},
@@ -95,13 +96,13 @@ public class Coordinates {
             for (double[] m : matrix) {
                 double value = 0d;
                 for (int k = 0; k < m.length; k++) {
-                    value += m[k] * this.coordinatesComponents.get(k);
+                    value += m[k] * distance.getDistanceComponents().get(k);
                 }
                 finalCoords.add(value);
             }
 
             // final result
-            this.coordinatesComponents = finalCoords;
+            distance.setDistanceComponents(finalCoords);
         }
     }
 
