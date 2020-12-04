@@ -54,14 +54,24 @@ public class MainActivity extends AppCompatActivity {
             now = Instant.now();
             Duration timeElapsed = Duration.between(start, now);
 
+            acceleration.readFromArray(convertFloatsToDoubles(values));
+
+            if(acceleration.getAccelerationComponents().get(0) < 0.001 && acceleration.getAccelerationComponents().get(0) > -0.001d)
+                acceleration.getAccelerationComponents().set(0, 0.0d);
+
+            if(acceleration.getAccelerationComponents().get(1) < 0.001 && acceleration.getAccelerationComponents().get(1) > -0.001)
+                acceleration.getAccelerationComponents().set(1, 0.0d);
+
+            if(acceleration.getAccelerationComponents().get(2) < 0.001 && acceleration.getAccelerationComponents().get(2) > -0.001)
+                acceleration.getAccelerationComponents().set(2, 0.0d);
+
             accelerometerXValue.setText("x: " + values[0]);
             accelerometerYValue.setText("y: " + values[1]);
             accelerometerZValue.setText("z: " + values[2]);
 
-            acceleration.readFromArray(convertFloatsToDoubles(values));
-
             coordinates.setCoordinates(acceleration, timeElapsed.toMillis() / 1000.0,
                     distance, velocity);
+
             coordinatesXValue.setText("x: " + coordinates.getCoordinatesComponents().get(0));
             coordinatesYValue.setText("y: " + coordinates.getCoordinatesComponents().get(1));
             coordinatesZValue.setText("z: " + coordinates.getCoordinatesComponents().get(2));
