@@ -17,6 +17,7 @@ import com.example.studioprojektowe2.coordinates.Acceleration;
 import com.example.studioprojektowe2.coordinates.Coordinates;
 import com.example.studioprojektowe2.coordinates.Distance;
 import com.example.studioprojektowe2.coordinates.Velocity;
+import com.kircherelectronics.fsensor.sensor.FSensor;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -31,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
     Distance distance = new Distance();
     Velocity velocity = new Velocity();
     Coordinates coordinates = new Coordinates();
+
+    private FSensor fSensor;
 
     private final SensorEventListener accelerometerListener = new SensorEventListener()
         {
