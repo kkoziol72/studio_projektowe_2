@@ -1,5 +1,7 @@
 package com.example.studioprojektowe2.coordinates;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,10 +29,11 @@ public class Velocity {
         this.velocityComponents = velocityComponents;
     }
 
+    private final double EPSILON = 0.001;
     public void updateVelocity(Acceleration acceleration, Double time) {
         if (acceleration.getAccelerationComponents().size() >= this.velocityComponents.size()) {
             for (int i = 0; i < this.velocityComponents.size(); i++) {
-                if(acceleration.getAccelerationComponents().get(i) == 0) {
+                if(Math.abs(acceleration.getAccelerationComponents().get(i)) < EPSILON) {
                     this.velocityComponents.set(i, 0.0d);
                 }
                 else {
@@ -40,7 +43,7 @@ public class Velocity {
         }
         else {
             for (int i = 0; i < acceleration.getAccelerationComponents().size(); i++) {
-                if(acceleration.getAccelerationComponents().get(i) == 0) this.velocityComponents.set(i, 0.0d);
+                if(Math.abs(acceleration.getAccelerationComponents().get(i)) < EPSILON) this.velocityComponents.set(i, 0.0d);
                 else
                     this.velocityComponents.set(i, this.velocityComponents.get(i) + (acceleration.getAccelerationComponents().get(i) * time));            }
         }

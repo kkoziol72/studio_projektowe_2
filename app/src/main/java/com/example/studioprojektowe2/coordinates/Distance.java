@@ -1,5 +1,7 @@
 package com.example.studioprojektowe2.coordinates;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +28,7 @@ public class Distance {
     public void setDistanceComponents(List<Double> distanceComponents) {
         this.distanceComponents = distanceComponents;
     }
-
+    private static int i = 0;
     public void updateDistance(Acceleration acceleration, Double time, Velocity velocity) {
         if (acceleration.getAccelerationComponents().size() >= this.distanceComponents.size() && velocity.getVelocityComponents().size() >= this.distanceComponents.size()) {
             for (int i = 0; i < this.distanceComponents.size(); i++) {

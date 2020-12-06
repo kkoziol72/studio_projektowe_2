@@ -21,6 +21,7 @@ import com.example.studioprojektowe2.coordinates.Distance;
 import com.example.studioprojektowe2.coordinates.Velocity;
 import com.kircherelectronics.fsensor.observer.SensorSubject;
 import com.kircherelectronics.fsensor.sensor.FSensor;
+import com.kircherelectronics.fsensor.sensor.acceleration.KalmanLinearAccelerationSensor;
 import com.kircherelectronics.fsensor.sensor.acceleration.LowPassLinearAccelerationSensor;
 
 import java.time.Duration;
@@ -45,17 +46,15 @@ public class MainActivity extends AppCompatActivity {
 
     private FSensor fSensor;
 
+    private int slower = 0;
+
     private final SensorSubject.SensorObserver sensorObserver = new SensorSubject.SensorObserver() {
         @RequiresApi(api = Build.VERSION_CODES.O)
         @SuppressLint("SetTextI18n")
         @Override
         public void onSensorChanged(float[] values) {
-            Instant start = now;
-            now = Instant.now();
-            Duration timeElapsed = Duration.between(start, now);
-
             acceleration.readFromArray(convertFloatsToDoubles(values));
-
+/*
             if(acceleration.getAccelerationComponents().get(0) < 0.001 && acceleration.getAccelerationComponents().get(0) > -0.001d)
                 acceleration.getAccelerationComponents().set(0, 0.0d);
 
@@ -64,34 +63,49 @@ public class MainActivity extends AppCompatActivity {
 
             if(acceleration.getAccelerationComponents().get(2) < 0.001 && acceleration.getAccelerationComponents().get(2) > -0.001)
                 acceleration.getAccelerationComponents().set(2, 0.0d);
+*/
+            if(values.length == 4 && !(values[3] != values[3])) {
+                float frequency = values[3];
+                double timeFreq = 1/frequency;
+                Log.d("TIME", frequency + ",,,,, " +timeFreq + " " + Thread.currentThread() + "  " + Instant.now());
+                Log.d("BEFORE VELOCITY" ,"X: "+velocity.getVelocityComponents().get(0)+", "+"X: "+velocity.getVelocityComponents().get(1)+", "+"X: "+velocity.getVelocityComponents().get(2));
+                Log.d("BEFoRE ACCELLERATION" ,"X: "+acceleration.getAccelerationComponents().get(0)+", "+"X: "+acceleration.getAccelerationComponents().get(1)+", "+"X: "+acceleration.getAccelerationComponents().get(2));
+                coordinates.setCoordinates(acceleration, timeFreq,
+                        distance, velocity);
+                Log.d("AFTER VELOCITY" ,"X: "+velocity.getVelocityComponents().get(0)+", "+"X: "+velocity.getVelocityComponents().get(1)+", "+"X: "+velocity.getVelocityComponents().get(2));
+                Log.d("AFTER ACCELLERATION" ,"X: "+acceleration.getAccelerationComponents().get(0)+", "+"X: "+acceleration.getAccelerationComponents().get(1)+", "+"X: "+acceleration.getAccelerationComponents().get(2));
 
-            accelerometerXValue.setText("x: " + values[0]);
-            accelerometerYValue.setText("y: " + values[1]);
-            accelerometerZValue.setText("z: " + values[2]);
+            }
+            if(slower > 50) {
+                accelerometerXValue.setText("x: " + String.format("%.4f", values[0]));
+                accelerometerYValue.setText("y: " + String.format("%.4f", values[1]));
+                accelerometerZValue.setText("z: " + String.format("%.4f", values[2]));
 
-            coordinates.setCoordinates(acceleration, timeElapsed.toMillis() / 1000.0,
-                    distance, velocity);
-
-            coordinatesXValue.setText("x: " + coordinates.getCoordinatesComponents().get(0));
-            coordinatesYValue.setText("y: " + coordinates.getCoordinatesComponents().get(1));
-            coordinatesZValue.setText("z: " + coordinates.getCoordinatesComponents().get(2));
+                coordinatesXValue.setText("x: " + String.format("%.4f", coordinates.getCoordinatesComponents().get(0)));
+                coordinatesYValue.setText("y: " + String.format("%.4f", coordinates.getCoordinatesComponents().get(1)));
+                coordinatesZValue.setText("z: " + String.format("%.4f", coordinates.getCoordinatesComponents().get(2)));
+                slower = 0;
+            }
+            slower++;
         }
     };
 
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        fSensor = new LowPassLinearAccelerationSensor(this);
-//        fSensor.register(sensorObserver);
-//        fSensor.start();
-//    }
-//
-//    @Override
-//    public void onPause() {
-//        fSensor.unregister(sensorObserver);
-//        fSensor.stop();
-//        super.onPause();
-//    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        LowPassLinearAccelerationSensor lowPass = new LowPassLinearAccelerationSensor(this);
+        //lowPass.s(0.01f);
+        fSensor = lowPass;
+        fSensor.register(sensorObserver);
+        fSensor.start();
+    }
+
+    @Override
+    public void onPause() {
+        fSensor.unregister(sensorObserver);
+        fSensor.stop();
+        super.onPause();
+    }
 
 
 //    private final SensorEventListener accelerometerListener = new SensorEventListener()
@@ -174,8 +188,6 @@ public class MainActivity extends AppCompatActivity {
         fSensor = new LowPassLinearAccelerationSensor(this);
         fSensor.register(sensorObserver);
         fSensor.start();
-
-        now = Instant.now();
     }
 
     public static double[] convertFloatsToDoubles(float[] input) {
