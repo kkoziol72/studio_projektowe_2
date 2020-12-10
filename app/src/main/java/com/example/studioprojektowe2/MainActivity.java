@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -20,6 +21,7 @@ import com.example.studioprojektowe2.coordinates.Coordinates;
 import com.example.studioprojektowe2.coordinates.Distance;
 import com.example.studioprojektowe2.coordinates.Rotation;
 import com.example.studioprojektowe2.coordinates.Velocity;
+import com.google.gson.Gson;
 import com.kircherelectronics.fsensor.filter.averaging.MeanFilter;
 import com.kircherelectronics.fsensor.observer.SensorSubject;
 import com.kircherelectronics.fsensor.sensor.FSensor;
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
             coordinatesTitle, coordinatesXValue, coordinatesYValue, coordinatesZValue;
 
     // final int READINGRATE = 2000;
+    SharedPreferences mPrefs;
 
     Acceleration acceleration = new Acceleration();
     Distance distance = new Distance();
@@ -109,6 +112,24 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        mPrefs = getPreferences(MODE_PRIVATE);
+        Gson gson = new Gson();
+        String jAcceleration = mPrefs.getString("acceleration", "");
+        String jDistance = mPrefs.getString("distance", "");
+        String jVelocity = mPrefs.getString("velocity", "");
+        String jCoordinates = mPrefs.getString("coordinates", "");
+        String jRotation = mPrefs.getString("rotation", "");
+
+        if (!jAcceleration.isEmpty()) {
+            acceleration = gson.fromJson(jAcceleration, Acceleration.class);
+            distance = gson.fromJson(jDistance, Distance.class);
+            velocity = gson.fromJson(jVelocity, Velocity.class);
+            coordinates = gson.fromJson(jCoordinates, Coordinates.class);
+            rotation = gson.fromJson(jRotation, Rotation.class);
+        }
+
+
+
         LowPassLinearAccelerationSensor lowPass = new LowPassLinearAccelerationSensor(this);
         //lowPass.s(0.01f);
         fSensor = lowPass;
@@ -123,6 +144,20 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onPause() {
+        SharedPreferences.Editor editor = getPreferences(MODE_PRIVATE).edit();
+        Gson gson = new Gson();
+        String jAcceleration = gson.toJson(acceleration);
+        String jDistance = gson.toJson(distance);
+        String jVelocity = gson.toJson(velocity);
+        String jCoordinates = gson.toJson(coordinates);
+        String jRotation = gson.toJson(rotation);
+
+        editor.putString("acceleration", jAcceleration);
+        editor.putString("distance", jDistance);
+        editor.putString("velocity", jVelocity);
+        editor.putString("coordinates", jCoordinates);
+        editor.putString("rotation", jRotation);
+
         fSensor.unregister(sensorObserver);
         fSensor.stop();
 
@@ -175,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        mPrefs = getPreferences(MODE_PRIVATE);
         setContentView(R.layout.activity_main);
 
         gyroscopeTitle = findViewById(R.id.gyroscope);
