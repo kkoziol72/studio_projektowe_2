@@ -18,11 +18,14 @@ import android.widget.TextView;
 import com.example.studioprojektowe2.coordinates.Acceleration;
 import com.example.studioprojektowe2.coordinates.Coordinates;
 import com.example.studioprojektowe2.coordinates.Distance;
+import com.example.studioprojektowe2.coordinates.Rotation;
 import com.example.studioprojektowe2.coordinates.Velocity;
+import com.kircherelectronics.fsensor.filter.averaging.MeanFilter;
 import com.kircherelectronics.fsensor.observer.SensorSubject;
 import com.kircherelectronics.fsensor.sensor.FSensor;
 import com.kircherelectronics.fsensor.sensor.acceleration.KalmanLinearAccelerationSensor;
 import com.kircherelectronics.fsensor.sensor.acceleration.LowPassLinearAccelerationSensor;
+import com.kircherelectronics.fsensor.sensor.gyroscope.GyroscopeSensor;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -41,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     Distance distance = new Distance();
     Velocity velocity = new Velocity();
     Coordinates coordinates = new Coordinates();
+    Rotation rotation = new Rotation();
 
     Instant now;
 
@@ -48,22 +52,28 @@ public class MainActivity extends AppCompatActivity {
 
     private int slower = 0;
 
+    // <gyroscope>
+    private MeanFilter gMeanFilter;
+    private FSensor gFSensor;
+    private final SensorSubject.SensorObserver gSensorObserver = new SensorSubject.SensorObserver() {
+        @Override
+        public void onSensorChanged(float[] values) {
+            rotation.setRotationComponents(gMeanFilter.filter(values));
+        }
+    };
+
+    // </gyroscope>
+
     private final SensorSubject.SensorObserver sensorObserver = new SensorSubject.SensorObserver() {
         @RequiresApi(api = Build.VERSION_CODES.O)
         @SuppressLint("SetTextI18n")
         @Override
         public void onSensorChanged(float[] values) {
             acceleration.readFromArray(convertFloatsToDoubles(values));
-/*
-            if(acceleration.getAccelerationComponents().get(0) < 0.001 && acceleration.getAccelerationComponents().get(0) > -0.001d)
-                acceleration.getAccelerationComponents().set(0, 0.0d);
 
-            if(acceleration.getAccelerationComponents().get(1) < 0.001 && acceleration.getAccelerationComponents().get(1) > -0.001)
-                acceleration.getAccelerationComponents().set(1, 0.0d);
+            // using rotation
+            acceleration.updateAccelerationUsingRotation(rotation);
 
-            if(acceleration.getAccelerationComponents().get(2) < 0.001 && acceleration.getAccelerationComponents().get(2) > -0.001)
-                acceleration.getAccelerationComponents().set(2, 0.0d);
-*/
             if(values.length == 4 && !(values[3] != values[3])) {
                 float frequency = values[3];
                 double timeFreq = 1/frequency;
@@ -84,6 +94,12 @@ public class MainActivity extends AppCompatActivity {
                 coordinatesXValue.setText("x: " + String.format("%.4f", coordinates.getCoordinatesComponents().get(0)));
                 coordinatesYValue.setText("y: " + String.format("%.4f", coordinates.getCoordinatesComponents().get(1)));
                 coordinatesZValue.setText("z: " + String.format("%.4f", coordinates.getCoordinatesComponents().get(2)));
+
+                // gyroscope
+                gyroscopeXValue.setText("x: " + String.format("%.4f", rotation.getRotationComponents().get(0)));
+                gyroscopeYValue.setText("y: " + String.format("%.4f", rotation.getRotationComponents().get(1)));
+                gyroscopeZValue.setText("z: " + String.format("%.4f", rotation.getRotationComponents().get(2)));
+
                 slower = 0;
             }
             slower++;
@@ -98,12 +114,22 @@ public class MainActivity extends AppCompatActivity {
         fSensor = lowPass;
         fSensor.register(sensorObserver);
         fSensor.start();
+
+        // gyroscope
+        gFSensor = new GyroscopeSensor(this);
+        gFSensor.register(gSensorObserver);
+        gFSensor.start();
     }
 
     @Override
     public void onPause() {
         fSensor.unregister(sensorObserver);
         fSensor.stop();
+
+        // gyroscope
+        gFSensor.unregister(gSensorObserver);
+        gFSensor.stop();
+
         super.onPause();
     }
 
@@ -176,8 +202,17 @@ public class MainActivity extends AppCompatActivity {
             velocity.setVelocityTo0();
             acceleration.setAccelerationTo0();
             coordinates.setCoordinatesTo0();
+            // gyroscope
+            gFSensor.reset();
             Log.e("Button", "clicked");
         });
+
+        // <gyroscope>
+        gMeanFilter = new MeanFilter();
+        gMeanFilter.setTimeConstant(0.5f);
+        // </gyroscope>
+
+
 
 //        SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 //        Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);

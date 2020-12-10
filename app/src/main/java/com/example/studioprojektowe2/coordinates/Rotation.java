@@ -34,6 +34,12 @@ public class Rotation {
         this.rotationComponents = rotationComponents;
     }
 
+    public void setRotationComponents(float[] rotationComponents) {
+        this.rotationComponents.set(0, (Math.toDegrees(rotationComponents[1]) + 360) % 360);
+        this.rotationComponents.set(1, (Math.toDegrees(rotationComponents[2]) + 360) % 360);
+        this.rotationComponents.set(2, (Math.toDegrees(rotationComponents[0]) + 360) % 360);
+    }
+
     public void updateWithSensorData(double[] angleChange) {
         if (angleChange.length <= this.rotationComponents.size()) {
             for (int i = 0; i < angleChange.length; i++) {

@@ -40,7 +40,7 @@ public class Coordinates {
     }
 
     public synchronized void setCoordinates(Acceleration acceleration, Double time, Distance distance,
-                               Velocity velocity) {
+                                            Velocity velocity) {
         distance.updateDistance(acceleration, time, velocity);
         velocity.updateVelocity(acceleration, time);
         updateCoordinates(distance);
